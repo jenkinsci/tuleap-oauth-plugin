@@ -8,19 +8,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
+import io.jenkins.plugins.tuleap_api.client.authentication.OpenIDClientApi;
 import io.jenkins.plugins.tuleap_oauth.TuleapSecurityRealm;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
-import io.jenkins.plugins.tuleap_oauth.model.TuleapOpenIdConfigurationRepresentation;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.io.IOException;
 import java.util.List;
 
 public class IDTokenCheckerImpl implements IDTokenChecker {
@@ -29,28 +23,13 @@ public class IDTokenCheckerImpl implements IDTokenChecker {
 
     private static final int ACCEPTED_LEEWAY_IN_SECONDS = 10;
 
-    private static final String DISCOVERY_ENDPOINT = ".well-known/openid-configuration";
-
-    private PluginHelper pluginHelper;
-    private OkHttpClient okHttpClient;
-    private Gson gson;
+    private final PluginHelper pluginHelper;
+    private final OpenIDClientApi openIDClientApi;
 
     @Inject
-    public IDTokenCheckerImpl(PluginHelper pluginHelper, OkHttpClient okHttpClient, Gson gson) {
+    public IDTokenCheckerImpl(PluginHelper pluginHelper, OpenIDClientApi openIDClientApi) {
         this.pluginHelper = pluginHelper;
-        this.okHttpClient = okHttpClient;
-        this.gson = gson;
-    }
-
-    @Override
-    public void checkHeader(DecodedJWT jwt) {
-        if (!jwt.getType().equals("JWT")) {
-            throw new InvalidClaimException("The Claim 'typ' value doesn't match the required one");
-        }
-
-        if (!jwt.getAlgorithm().equals(ALGORITHM)) {
-            throw new InvalidClaimException("The Claim 'alg' value doesn't match the required one");
-        }
+        this.openIDClientApi = openIDClientApi;
     }
 
     @Override
@@ -60,8 +39,8 @@ public class IDTokenCheckerImpl implements IDTokenChecker {
         String tuleapUri,
         String audience,
         StaplerRequest request
-    ) throws InvalidPublicKeyException, IOException {
-        String expectedIssuer = this.getIssuer(tuleapUri);
+    ) throws InvalidPublicKeyException {
+        String expectedIssuer = this.openIDClientApi.getProviderIssuer();
 
         if (StringUtils.isBlank(expectedIssuer)) {
             throw new InvalidClaimException("The issuer claim is blank or null");
@@ -92,22 +71,5 @@ public class IDTokenCheckerImpl implements IDTokenChecker {
             }
         }
         throw new InvalidPublicKeyException("No valid RS256 Key found", null);
-    }
-
-    private String getIssuer(String tuleapUri) throws IOException {
-        Request req = new Request.Builder()
-            .url(tuleapUri + DISCOVERY_ENDPOINT)
-            .get()
-            .build();
-
-        TuleapOpenIdConfigurationRepresentation configuration;
-        try (Response issuerResponse = this.okHttpClient.newCall(req).execute()) {
-            ResponseBody body = this.pluginHelper.getResponseBody(issuerResponse);
-            if (body == null) {
-                return null;
-            }
-            configuration = this.gson.fromJson(body.string(), TuleapOpenIdConfigurationRepresentation.class);
-        }
-        return configuration.getIssuer();
     }
 }

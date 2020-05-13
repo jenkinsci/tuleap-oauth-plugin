@@ -8,10 +8,8 @@ import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.gson.Gson;
+import io.jenkins.plugins.tuleap_api.client.authentication.OpenIDClientApi;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
-import io.jenkins.plugins.tuleap_oauth.model.TuleapOpenIdConfigurationRepresentation;
-import okhttp3.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.kohsuke.stapler.StaplerRequest;
@@ -30,65 +28,19 @@ import static org.mockito.Mockito.*;
 public class IDTokenCheckerImplTest {
 
     private PluginHelper pluginHelper;
-    private OkHttpClient okHttp;
-    private Gson gson;
+    private OpenIDClientApi openIDClientApi;
 
     @Before
     public void setUp() {
         this.pluginHelper = mock(PluginHelper.class);
-        this.okHttp = mock(OkHttpClient.class);
-        this.gson = mock(Gson.class);
-    }
-
-    @Test(expected = InvalidClaimException.class)
-    public void testHeaderThrowsExceptionWhenTheTypeIsNotExpected() {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
-
-        DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getType()).thenReturn("JWGDLMGLD");
-
-        jwtChecker.checkHeader(jwt);
-    }
-
-    @Test(expected = InvalidClaimException.class)
-    public void testHeaderThrowsExceptionWhenTheAlgIsNotExpected() {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
-
-        DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getType()).thenReturn("JWT");
-        when(jwt.getAlgorithm()).thenReturn("HS256");
-
-        jwtChecker.checkHeader(jwt);
-    }
-
-    @Test
-    public void testHeaderIsOk() {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
-
-        DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getType()).thenReturn("JWT");
-        when(jwt.getAlgorithm()).thenReturn("RS256");
-
-        jwtChecker.checkHeader(jwt);
+        this.openIDClientApi = mock(OpenIDClientApi.class);
     }
 
     @Test(expected = InvalidClaimException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenTheIssuerIsNotExpected() throws InvalidPublicKeyException, IOException {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
+        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        Call call = mock(Call.class);
-        Response response = mock(Response.class);
-        when(this.okHttp.newCall(any())).thenReturn(call);
-        when(call.execute()).thenReturn(response);
-        when(response.code()).thenReturn(200);
-
-        ResponseBody responseBody = mock(ResponseBody.class);
-        when(responseBody.string()).thenReturn("{issuer:https://issuerFailure.example.com}");
-        when(this.pluginHelper.getResponseBody(response)).thenReturn(responseBody);
-        TuleapOpenIdConfigurationRepresentation configurationRepresentation = mock(TuleapOpenIdConfigurationRepresentation.class);
-        when(this.gson.fromJson(responseBody.string(), TuleapOpenIdConfigurationRepresentation.class))
-            .thenReturn(configurationRepresentation);
-        when(configurationRepresentation.getIssuer()).thenReturn("https://issuerFailure.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://fail.example.com");
 
         DecodedJWT jwt = mock(DecodedJWT.class);
         when(jwt.getIssuer()).thenReturn("https://success.example.com");
@@ -125,21 +77,9 @@ public class IDTokenCheckerImplTest {
 
     @Test(expected = AlgorithmMismatchException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenTheAlgorithmIsNotExpected() throws InvalidPublicKeyException, IOException {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
+        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        Call call = mock(Call.class);
-        Response response = mock(Response.class);
-        when(this.okHttp.newCall(any())).thenReturn(call);
-        when(call.execute()).thenReturn(response);
-        when(response.code()).thenReturn(200);
-
-        ResponseBody responseBody = mock(ResponseBody.class);
-        when(responseBody.string()).thenReturn("{issuer:https://success.example.com}");
-        when(this.pluginHelper.getResponseBody(response)).thenReturn(responseBody);
-        TuleapOpenIdConfigurationRepresentation configurationRepresentation = mock(TuleapOpenIdConfigurationRepresentation.class);
-        when(this.gson.fromJson(responseBody.string(), TuleapOpenIdConfigurationRepresentation.class))
-            .thenReturn(configurationRepresentation);
-        when(configurationRepresentation.getIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
 
         DecodedJWT jwt = mock(DecodedJWT.class);
         when(jwt.getIssuer()).thenReturn("https://success.example.com");
@@ -172,21 +112,9 @@ public class IDTokenCheckerImplTest {
 
     @Test(expected = InvalidClaimException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenNonceValueIsNotExpected() throws InvalidPublicKeyException, IOException {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
+        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        Call call = mock(Call.class);
-        Response response = mock(Response.class);
-        when(this.okHttp.newCall(any())).thenReturn(call);
-        when(call.execute()).thenReturn(response);
-        when(response.code()).thenReturn(200);
-
-        ResponseBody responseBody = mock(ResponseBody.class);
-        when(responseBody.string()).thenReturn("{issuer:https://success.example.com}");
-        when(this.pluginHelper.getResponseBody(response)).thenReturn(responseBody);
-        TuleapOpenIdConfigurationRepresentation configurationRepresentation = mock(TuleapOpenIdConfigurationRepresentation.class);
-        when(this.gson.fromJson(responseBody.string(), TuleapOpenIdConfigurationRepresentation.class))
-            .thenReturn(configurationRepresentation);
-        when(configurationRepresentation.getIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
 
         DecodedJWT jwt = mock(DecodedJWT.class);
         when(jwt.getIssuer()).thenReturn("https://success.example.com");
@@ -219,21 +147,9 @@ public class IDTokenCheckerImplTest {
 
     @Test(expected = InvalidPublicKeyException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenThereIsNoRS256ValidKey() throws InvalidPublicKeyException, IOException {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
+        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        Call call = mock(Call.class);
-        Response response = mock(Response.class);
-        when(this.okHttp.newCall(any())).thenReturn(call);
-        when(call.execute()).thenReturn(response);
-        when(response.code()).thenReturn(200);
-
-        ResponseBody responseBody = mock(ResponseBody.class);
-        when(responseBody.string()).thenReturn("{issuer:https://success.example.com}");
-        when(this.pluginHelper.getResponseBody(response)).thenReturn(responseBody);
-        TuleapOpenIdConfigurationRepresentation configurationRepresentation = mock(TuleapOpenIdConfigurationRepresentation.class);
-        when(this.gson.fromJson(responseBody.string(), TuleapOpenIdConfigurationRepresentation.class))
-            .thenReturn(configurationRepresentation);
-        when(configurationRepresentation.getIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
 
         DecodedJWT jwt = mock(DecodedJWT.class);
         when(jwt.getIssuer()).thenReturn("https://success.example.com");
@@ -275,21 +191,9 @@ public class IDTokenCheckerImplTest {
 
     @Test(expected = InvalidPublicKeyException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenThereIsNoRS256Key() throws InvalidPublicKeyException, IOException {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
+        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        Call call = mock(Call.class);
-        Response response = mock(Response.class);
-        when(this.okHttp.newCall(any())).thenReturn(call);
-        when(call.execute()).thenReturn(response);
-        when(response.code()).thenReturn(200);
-
-        ResponseBody responseBody = mock(ResponseBody.class);
-        when(responseBody.string()).thenReturn("{issuer:https://success.example.com}");
-        when(this.pluginHelper.getResponseBody(response)).thenReturn(responseBody);
-        TuleapOpenIdConfigurationRepresentation configurationRepresentation = mock(TuleapOpenIdConfigurationRepresentation.class);
-        when(this.gson.fromJson(responseBody.string(), TuleapOpenIdConfigurationRepresentation.class))
-            .thenReturn(configurationRepresentation);
-        when(configurationRepresentation.getIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
 
         DecodedJWT jwt = mock(DecodedJWT.class);
         when(jwt.getIssuer()).thenReturn("https://success.example.com");
@@ -326,21 +230,9 @@ public class IDTokenCheckerImplTest {
 
     @Test(expected = InvalidClaimException.class)
     public void testPayloadReturnsExceptionWhenUnexpectedAudience() throws InvalidPublicKeyException, IOException {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
+        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        Call call = mock(Call.class);
-        Response response = mock(Response.class);
-        when(this.okHttp.newCall(any())).thenReturn(call);
-        when(call.execute()).thenReturn(response);
-        when(response.code()).thenReturn(200);
-
-        ResponseBody responseBody = mock(ResponseBody.class);
-        when(responseBody.string()).thenReturn("https://success.example.com");
-        when(this.pluginHelper.getResponseBody(response)).thenReturn(responseBody);
-        TuleapOpenIdConfigurationRepresentation configurationRepresentation = mock(TuleapOpenIdConfigurationRepresentation.class);
-        when(this.gson.fromJson(responseBody.string(), TuleapOpenIdConfigurationRepresentation.class))
-            .thenReturn(configurationRepresentation);
-        when(configurationRepresentation.getIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
 
         DecodedJWT jwt = mock(DecodedJWT.class);
         when(jwt.getIssuer()).thenReturn("https://success.example.com");
@@ -377,21 +269,9 @@ public class IDTokenCheckerImplTest {
 
     @Test(expected = InvalidClaimException.class)
     public void testPayloadReturnsExceptionWhenThereIsNoIssuer() throws InvalidPublicKeyException, IOException {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
+        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        Call call = mock(Call.class);
-        Response response = mock(Response.class);
-        when(this.okHttp.newCall(any())).thenReturn(call);
-        when(call.execute()).thenReturn(response);
-        when(response.code()).thenReturn(200);
-
-        ResponseBody responseBody = mock(ResponseBody.class);
-        when(responseBody.string()).thenReturn(null);
-        when(this.pluginHelper.getResponseBody(response)).thenReturn(responseBody);
-        TuleapOpenIdConfigurationRepresentation configurationRepresentation = mock(TuleapOpenIdConfigurationRepresentation.class);
-        when(this.gson.fromJson(responseBody.string(), TuleapOpenIdConfigurationRepresentation.class))
-            .thenReturn(configurationRepresentation);
-        when(configurationRepresentation.getIssuer()).thenReturn(null);
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn(null);
 
         DecodedJWT jwt = mock(DecodedJWT.class);
         when(jwt.getIssuer()).thenReturn("https://success.example.com");
@@ -428,21 +308,9 @@ public class IDTokenCheckerImplTest {
 
     @Test(expected = InvalidClaimException.class)
     public void testPayloadReturnsExceptionWhenThereIsNoAudience() throws InvalidPublicKeyException, IOException {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
+        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        Call call = mock(Call.class);
-        Response response = mock(Response.class);
-        when(this.okHttp.newCall(any())).thenReturn(call);
-        when(call.execute()).thenReturn(response);
-        when(response.code()).thenReturn(200);
-
-        ResponseBody responseBody = mock(ResponseBody.class);
-        when(responseBody.string()).thenReturn("https://success.example.com/");
-        when(this.pluginHelper.getResponseBody(response)).thenReturn(responseBody);
-        TuleapOpenIdConfigurationRepresentation configurationRepresentation = mock(TuleapOpenIdConfigurationRepresentation.class);
-        when(this.gson.fromJson(responseBody.string(), TuleapOpenIdConfigurationRepresentation.class))
-            .thenReturn(configurationRepresentation);
-        when(configurationRepresentation.getIssuer()).thenReturn("https://success.example.com/");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
 
         DecodedJWT jwt = mock(DecodedJWT.class);
         when(jwt.getIssuer()).thenReturn("https://success.example.com");
@@ -479,21 +347,9 @@ public class IDTokenCheckerImplTest {
 
     @Test
     public void testPayloadAndSignatureAreOk() throws InvalidPublicKeyException, IOException {
-        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.okHttp, this.gson);
+        IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        Call call = mock(Call.class);
-        Response response = mock(Response.class);
-        when(this.okHttp.newCall(any())).thenReturn(call);
-        when(call.execute()).thenReturn(response);
-        when(response.code()).thenReturn(200);
-
-        ResponseBody responseBody = mock(ResponseBody.class);
-        when(responseBody.string()).thenReturn("{issuer:https://success.example.com}");
-        when(this.pluginHelper.getResponseBody(response)).thenReturn(responseBody);
-        TuleapOpenIdConfigurationRepresentation configurationRepresentation = mock(TuleapOpenIdConfigurationRepresentation.class);
-        when(this.gson.fromJson(responseBody.string(), TuleapOpenIdConfigurationRepresentation.class))
-            .thenReturn(configurationRepresentation);
-        when(configurationRepresentation.getIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
 
         DecodedJWT jwt = mock(DecodedJWT.class);
         when(jwt.getIssuer()).thenReturn("https://success.example.com");

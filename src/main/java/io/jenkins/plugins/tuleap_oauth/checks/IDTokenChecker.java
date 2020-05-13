@@ -10,6 +10,5 @@ import java.io.IOException;
 import java.util.List;
 
 public interface IDTokenChecker {
-    void checkHeader(DecodedJWT jwt);
     void checkPayloadAndSignature(DecodedJWT jwt, List<Jwk> jwks, String issuer, String audience, StaplerRequest request) throws InvalidPublicKeyException, IOException;
 }
