@@ -6,12 +6,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.Descriptor;
 import hudson.model.User;
 import hudson.security.SecurityRealm;
+import hudson.security.UserMayOrMayNotExistException;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
@@ -22,6 +22,8 @@ import io.jenkins.plugins.tuleap_oauth.checks.AccessTokenChecker;
 import io.jenkins.plugins.tuleap_oauth.checks.AuthorizationCodeChecker;
 import io.jenkins.plugins.tuleap_oauth.checks.IDTokenChecker;
 import io.jenkins.plugins.tuleap_oauth.checks.UserInfoChecker;
+import io.jenkins.plugins.tuleap_oauth.entity.AccessTokenRepresentation;
+import io.jenkins.plugins.tuleap_oauth.exceptions.UserInfoRetrievalException;
 import io.jenkins.plugins.tuleap_oauth.guice.TuleapOAuth2GuiceModule;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import io.jenkins.plugins.tuleap_oauth.helper.TuleapAuthorizationCodeUrlBuilder;
@@ -31,6 +33,7 @@ import jenkins.security.SecurityListener;
 import okhttp3.*;
 import org.acegisecurity.*;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 
 import org.apache.commons.lang.StringUtils;
@@ -172,6 +175,31 @@ public class TuleapSecurityRealm extends SecurityRealm {
     }
 
     @Override
+    public UserDetails loadUserByUsername(String username) {
+        Authentication token = SecurityContextHolder.getContext().getAuthentication();
+
+        if (token == null) {
+            throw new UsernameNotFoundException("No access token found for user " + username);
+        }
+
+        if (!(token instanceof TuleapAuthenticationToken)) {
+            throw new UserMayOrMayNotExistException("Unknown token type for user " + username);
+        }
+
+        AccessTokenRepresentation accessToken = this.gson.fromJson(
+            this.tuleapAccessTokenStorage.retrieve(Objects.requireNonNull(User.getById(username, false))).getPlainText(),
+            AccessTokenRepresentation.class
+        );
+
+        UserInfo userInfo = this.openIDClientApi.getUserInfo(accessToken);
+
+        return new TuleapUserDetails(
+            userInfo.getUsername(),
+            token.getAuthorities()
+        );
+    }
+
+    @Override
     public SecurityComponents createSecurityComponents() {
         return new SecurityComponents(new AuthenticationManager() {
 
@@ -239,6 +267,11 @@ public class TuleapSecurityRealm extends SecurityRealm {
         }
 
         this.authenticateAsTuleapUser(request, userInfo, accessToken);
+
+        this.tuleapAccessTokenStorage.save(
+            Objects.requireNonNull(User.current()),
+            Secret.fromString(this.gson.toJson(AccessTokenRepresentation.buildFromAccessToken(accessToken)))
+        );
 
         return HttpResponses.redirectToContextRoot();
     }
