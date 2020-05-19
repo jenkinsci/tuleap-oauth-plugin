@@ -23,7 +23,6 @@ import io.jenkins.plugins.tuleap_oauth.checks.AuthorizationCodeChecker;
 import io.jenkins.plugins.tuleap_oauth.checks.IDTokenChecker;
 import io.jenkins.plugins.tuleap_oauth.checks.UserInfoChecker;
 import io.jenkins.plugins.tuleap_oauth.entity.AccessTokenRepresentation;
-import io.jenkins.plugins.tuleap_oauth.exceptions.UserInfoRetrievalException;
 import io.jenkins.plugins.tuleap_oauth.guice.TuleapOAuth2GuiceModule;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import io.jenkins.plugins.tuleap_oauth.helper.TuleapAuthorizationCodeUrlBuilder;
@@ -176,13 +175,13 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        Authentication token = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authenticatedUserAcegiToken = SecurityContextHolder.getContext().getAuthentication();
 
-        if (token == null) {
+        if (authenticatedUserAcegiToken == null) {
             throw new UsernameNotFoundException("No access token found for user " + username);
         }
 
-        if (!(token instanceof TuleapAuthenticationToken)) {
+        if (!(authenticatedUserAcegiToken instanceof TuleapAuthenticationToken)) {
             throw new UserMayOrMayNotExistException("Unknown token type for user " + username);
         }
 
@@ -195,7 +194,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
         return new TuleapUserDetails(
             userInfo.getUsername(),
-            token.getAuthorities()
+            authenticatedUserAcegiToken.getAuthorities()
         );
     }
 
