@@ -78,7 +78,7 @@ public class TuleapAuthorizationCodeUrlBuilderImplTest {
             "response_type=code" +
             "&client_id=123" +
             "&redirect_uri=" + URLEncoder.encode("https://jenkins.example.com/securityRealm/finishLogin", UTF_8.name()) +
-            "&scope="+ URLEncoder.encode("read:project read:user_membership openid profile", UTF_8.name()) +
+            "&scope="+ URLEncoder.encode("read:project read:user_membership openid profile offline_access", UTF_8.name()) +
             "&state=Brabus" +
             "&code_challenge=B35S" +
             "&code_challenge_method=S256" +

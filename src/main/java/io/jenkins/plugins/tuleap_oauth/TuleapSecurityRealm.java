@@ -67,7 +67,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     public static final String AUTHORIZATION_ENDPOINT = "oauth2/authorize?";
 
-    public static final String SCOPES = "read:project read:user_membership openid profile";
+    public static final String SCOPES = "read:project read:user_membership openid profile offline_access";
     public static final String CODE_CHALLENGE_METHOD = "S256";
 
     private AuthorizationCodeChecker authorizationCodeChecker;
@@ -176,6 +176,8 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
+        this.injectInstances();
+
         Authentication authenticatedUserAcegiToken = SecurityContextHolder.getContext().getAuthentication();
 
         if (authenticatedUserAcegiToken == null) {
@@ -186,16 +188,34 @@ public class TuleapSecurityRealm extends SecurityRealm {
             throw new UserMayOrMayNotExistException("Unknown token type for user " + username);
         }
 
+        User user = User.getById(username, false);
+
+        if (! (user != null && this.tuleapAccessTokenStorage.has(user))) {
+            throw new UserMayOrMayNotExistException("Token not found for user " + username);
+        }
+
         AccessTokenRepresentation accessToken = this.gson.fromJson(
-            this.tuleapAccessTokenStorage.retrieve(Objects.requireNonNull(User.getById(username, false))).getPlainText(),
+            this.tuleapAccessTokenStorage.retrieve(user).getPlainText(),
             AccessTokenRepresentation.class
         );
 
-        UserInfo userInfo = this.openIDClientApi.getUserInfo(accessToken);
+        UserInfo userInfo = null;
+
+        try {
+            userInfo = this.openIDClientApi.getUserInfo(accessToken);
+        } catch (RuntimeException exception) {
+            AccessTokenRepresentation refreshedToken = AccessTokenRepresentation.buildFromAccessToken(this.accessTokenApi.refreshToken(accessToken, this.clientId, this.clientSecret));
+            this.tuleapAccessTokenStorage.save(user, Secret.fromString(this.gson.toJson(refreshedToken)));
+            userInfo = this.openIDClientApi.getUserInfo(refreshedToken);
+        } finally {
+            if (userInfo == null) {
+                throw new UserMayOrMayNotExistException("Error while trying to load user info for user " + username);
+            }
+        }
 
         return new TuleapUserDetails(
             userInfo.getUsername(),
-            authenticatedUserAcegiToken.getAuthorities()
+            new GrantedAuthority[0]
         );
     }
 
