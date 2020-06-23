@@ -3,10 +3,14 @@ package io.jenkins.plugins.tuleap_oauth.helper;
 import com.auth0.jwk.InvalidPublicKeyException;
 import com.auth0.jwk.Jwk;
 import com.auth0.jwt.algorithms.Algorithm;
+import hudson.model.User;
+import io.jenkins.plugins.tuleap_oauth.TuleapAuthenticationToken;
 import io.jenkins.plugins.tuleap_server_configuration.TuleapConfiguration;
 import jenkins.model.Jenkins;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.net.util.Base64;
 
 import java.io.IOException;
@@ -67,5 +71,15 @@ public class PluginHelperImpl implements PluginHelper {
         }
 
         return body;
+    }
+
+    @Override
+    public Authentication getCurrentUserAuthenticationToken() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    @Override
+    public User getUser(String username) {
+        return User.getById(username, false);
     }
 }

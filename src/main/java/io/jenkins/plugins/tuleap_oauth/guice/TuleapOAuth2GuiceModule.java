@@ -1,6 +1,7 @@
 package io.jenkins.plugins.tuleap_oauth.guice;
 
 import com.google.inject.AbstractModule;
+import io.jenkins.plugins.tuleap_api.client.TuleapApiGuiceModule;
 import io.jenkins.plugins.tuleap_api.client.authentication.TuleapAuthenticationApiGuiceModule;
 import io.jenkins.plugins.tuleap_oauth.checks.*;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
@@ -21,5 +22,6 @@ public class TuleapOAuth2GuiceModule extends AbstractModule {
         bind(UserInfoChecker.class).to(UserInfoCheckerImpl.class);
         bind(TuleapAuthorizationCodeUrlBuilder.class).to(TuleapAuthorizationCodeUrlBuilderImpl.class);
         install(new TuleapAuthenticationApiGuiceModule());
+        install(new TuleapApiGuiceModule());
     }
 }

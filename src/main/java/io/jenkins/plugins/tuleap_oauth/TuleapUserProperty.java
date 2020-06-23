@@ -7,19 +7,10 @@ import hudson.model.UserPropertyDescriptor;
 import hudson.util.Secret;
 import org.jenkinsci.Symbol;
 
-public class TuleapAccessTokenProperty extends UserProperty {
-    private final Secret accessToken;
-
-    public TuleapAccessTokenProperty(Secret accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public Secret getAccessToken() {
-        return accessToken;
-    }
+public class TuleapUserProperty extends UserProperty {
 
     @Extension
-    @Symbol("tuleapAccessToken")
+    @Symbol("tuleapUserProperty")
     public static final class DescriptorImpl extends UserPropertyDescriptor {
         @Override
         public boolean isEnabled() {

@@ -1,18 +1,42 @@
 package io.jenkins.plugins.tuleap_oauth;
 
 import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.userdetails.User;
 import org.acegisecurity.userdetails.UserDetails;
 
-public class TuleapUserDetails extends User implements UserDetails {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
-    private String username;
+public class TuleapUserDetails implements UserDetails {
 
-    public TuleapUserDetails(String username, GrantedAuthority[] authorities) {
-        super(username, "", true, true, true, true, authorities);
+    private final String username;
+    private final ArrayList<GrantedAuthority> authorities;
+    private final ArrayList<GrantedAuthority> tuleapAuthorities;
+
+    public TuleapUserDetails(final String username) {
         this.username = username;
+        this.authorities = new ArrayList<>();
+        this.tuleapAuthorities = new ArrayList<>();
     }
 
+    @Override
+    public GrantedAuthority[] getAuthorities() {
+        return Stream
+            .concat(this.authorities.stream(), this.tuleapAuthorities.stream())
+            .toArray(GrantedAuthority[]::new);
+    }
+
+    public List<GrantedAuthority> getTuleapAuthorities() {
+        return this.tuleapAuthorities;
+    }
+
+    public void addAuthority(GrantedAuthority authority) {
+        this.authorities.add(authority);
+    }
+
+    public void addTuleapAuthority(GrantedAuthority tuleapAuthority) {
+        this.tuleapAuthorities.add(tuleapAuthority);
+    }
 
     @Override
     public String getPassword() {
