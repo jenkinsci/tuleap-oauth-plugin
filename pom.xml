@@ -9,7 +9,7 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>tuleap-oauth</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.2.0</version>
     <packaging>hpi</packaging>
     <properties>
         <jenkins.version>2.164.1</jenkins.version>
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>io.jenkins.plugins</groupId>
             <artifactId>tuleap-api</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
