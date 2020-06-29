@@ -1,0 +1,21 @@
+<div>
+    En utilisant se domaine, les utilisateurs Jenkins peuvent utiliser leur compte Tuleap pour se connecter au serveur
+    Jenkins. <br/>
+    Pour pouvoir être autentifié en utilisant Tuleap, vous devez rajouter l'URL de redirection du serveur Jenkins dans
+    votre application Tuleap OAuth2 <br/>
+    L'URL de redirection est de la forme suivante: https://your_jenkins_server.example.com/securityRealm/finishLogin
+    <br/> <br/>
+
+    <strong>REMARQUES :</strong>
+    <ul>
+        <li>Le module OAuth2 est un <a
+                href="https://docs.tuleap.org/user-guide/tuleap-entreprise.html#tuleap-enterprise">
+            module Tuleap Enterprise</a>
+        </li>
+        <li> Votre serveur Jenkins <strong>DOIT</strong> être en HTTPS</li>
+        <li> L'usage du PKCE <strong>DOIT</strong> être activé dans votre <a
+                href="https://docs.tuleap.org/user-guide/oauth2.html#openidconnect-provider">
+            application OAuth2 Tuleap</a>
+        </li>
+    </ul>
+</div>

@@ -388,5 +388,10 @@ public class TuleapSecurityRealm extends SecurityRealm {
             }
             return FormValidation.ok();
         }
+
+        @Override
+        public String getHelpFile() {
+            return "/plugin/tuleap-oauth/helpTuleapSecurityRealm/helpTuleapRealm/help.html";
+        }
     }
 }

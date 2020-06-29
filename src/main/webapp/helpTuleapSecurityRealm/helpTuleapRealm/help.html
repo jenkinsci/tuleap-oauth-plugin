@@ -1,0 +1,21 @@
+<div>
+    By using this realm, user will be able to use their Tuleap account to be connected on the Jenkins server. <br/>
+    To be authenticated with Tuleap, you have to add the Jenkins redirection endpoint in your <a
+        href="https://docs.tuleap.org/user-guide/oauth2.html#openidconnect-provider">
+    Tuleap OAuth2 app.</a> <br/>
+    The format of the Jenkins redirection endpoint is: https://your_jenkins_server/securityRealm/finishLogin
+    <br/> <br/>
+
+    <strong>NOTES:</strong>
+    <ul>
+        <li> The OAuth2 module is a <a
+                href="https://docs.tuleap.org/user-guide/tuleap-entreprise.html#tuleap-enterprise">
+            Tuleap Enterprise module </a>
+        </li>
+        <li> Your Jenkins server <strong>MUST</strong> be in HTTPS</li>
+        <li> The PKCE usage <strong>MUST</strong> be enabled in your <a
+                href="https://docs.tuleap.org/user-guide/oauth2.html#openidconnect-provider">
+            Tuleap OAuth2 app</a>
+        </li>
+    </ul>
+</div>
