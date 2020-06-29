@@ -219,11 +219,11 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
         final TuleapAuthenticationToken tuleapAuthenticationToken = (TuleapAuthenticationToken) authenticatedUserAcegiToken;
 
-        if (this.tokenHasTuleapGroup(tuleapAuthenticationToken, groupName)) {
-            return new TuleapGroupDetails(groupName);
+        if (! this.tokenHasTuleapGroup(tuleapAuthenticationToken, groupName)) {
+            throw new UsernameNotFoundException("Group " + groupName + " not found for current Tuleap user");
         }
 
-        throw new UsernameNotFoundException("Group " + groupName + " not found for current Tuleap user");
+        return new TuleapGroupDetails(groupName);
     }
 
     private Boolean tokenHasTuleapGroup(TuleapAuthenticationToken token, String groupName) {

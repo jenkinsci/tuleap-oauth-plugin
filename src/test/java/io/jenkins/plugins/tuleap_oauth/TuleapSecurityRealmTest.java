@@ -226,14 +226,6 @@ public class TuleapSecurityRealmTest {
         tuleapSecurityRealm.loadUserByUsername(username);
     }
 
-
-
-
-
-
-
-
-
     @Test
     public void testItShouldReturnATuleapGroupDetailIfGroupIsFromTuleap() {
         TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
