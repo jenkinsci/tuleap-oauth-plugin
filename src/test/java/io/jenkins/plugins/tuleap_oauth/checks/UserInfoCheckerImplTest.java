@@ -22,9 +22,23 @@ public class UserInfoCheckerImplTest {
     }
 
     @Test
+    public void testItReturnFalseWhenTheUserIsInvalid() {
+        UserInfo userInfo = mock(UserInfo.class);
+        when(userInfo.getSubject()).thenReturn("1510");
+        when(userInfo.isEmailVerified()).thenReturn(false);
+
+        DecodedJWT idToken = mock(DecodedJWT.class);
+        when(idToken.getSubject()).thenReturn("1510");
+
+        UserInfoCheckerImpl userInfoChecker = new UserInfoCheckerImpl();
+        assertFalse(userInfoChecker.checkUserInfoResponseBody(userInfo, idToken));
+    }
+
+    @Test
     public void testItReturnTrueIfTheBodyIsOk() {
         UserInfo userInfo = mock(UserInfo.class);
         when(userInfo.getSubject()).thenReturn("123");
+        when(userInfo.isEmailVerified()).thenReturn(true);
 
         DecodedJWT idToken = mock(DecodedJWT.class);
         when(idToken.getSubject()).thenReturn("123");

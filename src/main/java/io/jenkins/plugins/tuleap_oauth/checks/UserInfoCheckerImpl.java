@@ -15,6 +15,10 @@ public class UserInfoCheckerImpl implements UserInfoChecker {
             LOGGER.warning("Subject not expected");
             return false;
         }
+        if (!userInfo.isEmailVerified()) {
+            LOGGER.warning("Invalid user");
+            return false;
+        }
         return true;
     }
 }

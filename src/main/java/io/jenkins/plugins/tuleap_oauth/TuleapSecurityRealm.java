@@ -14,6 +14,7 @@ import hudson.model.User;
 import hudson.security.GroupDetails;
 import hudson.security.SecurityRealm;
 import hudson.security.UserMayOrMayNotExistException;
+import hudson.tasks.Mailer;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
@@ -68,7 +69,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     public static final String AUTHORIZATION_ENDPOINT = "oauth2/authorize?";
 
-    public static final String SCOPES = "read:project read:user_membership openid profile";
+    public static final String SCOPES = "read:project read:user_membership openid profile email";
     public static final String CODE_CHALLENGE_METHOD = "S256";
 
     private AuthorizationCodeChecker authorizationCodeChecker;
@@ -328,7 +329,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
         return this.pluginHelper.getJenkinsInstance();
     }
 
-    private void authenticateAsTuleapUser(StaplerRequest request, UserInfo userInfo, AccessToken accessToken) {
+    private void authenticateAsTuleapUser(StaplerRequest request, UserInfo userInfo, AccessToken accessToken) throws IOException {
         final TuleapUserDetails tuleapUserDetails = new TuleapUserDetails(userInfo.getUsername());
         tuleapUserDetails.addAuthority(SecurityRealm.AUTHENTICATED_AUTHORITY);
 
@@ -354,7 +355,11 @@ public class TuleapSecurityRealm extends SecurityRealm {
             throw new UsernameNotFoundException("User not found");
         }
 
-        tuleapUser.setFullName(tuleapUserDetails.getUsername());
+        tuleapUser.setFullName(userInfo.getName());
+
+        if (!tuleapUser.getProperty(Mailer.UserProperty.class).hasExplicitlyConfiguredAddress()) {
+            tuleapUser.addProperty(new Mailer.UserProperty(userInfo.getEmail()));
+        }
 
         this.tuleapUserPropertyStorage.save(tuleapUser);
 
