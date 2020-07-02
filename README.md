@@ -1,7 +1,14 @@
 # tuleap-oauth-plugin
 Authentication plugin using Tuleap Oauth2 App.
-With this plugin user can:
- - Be logged in Jenkins by using his Tuleap credentials.
+With this plugin:
+
+ - User can be logged in Jenkins by using his Tuleap credentials.
+ - Tuleap defined user groups can be used in the [Permission Matrix](https://plugins.jenkins.io/matrix-auth/)
+
+In the matrix-based security administrator can make reference to:
+
+ -  any valid Tuleap user
+ -  any user group defined in any project with the syntax `Tuleap project short name#user group name` (example: `my_project#project_members`)
 
 ## Installation
 You can either install the plugin via the [Jenkins Plugins Center](https://www.jenkins.io/doc/book/managing/plugins/#from-the-web-ui), or manually.
