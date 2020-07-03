@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 public class PluginHelperImpl implements PluginHelper {
 
-    private static Logger LOGGER = Logger.getLogger(PluginHelper.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PluginHelper.class.getName());
 
     private final static Integer RECOMMENDED_LENGTH = 32;
 

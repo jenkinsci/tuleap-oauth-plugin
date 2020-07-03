@@ -233,7 +233,7 @@ public class TuleapSecurityRealmTest {
 
         final AccessToken accessToken = mock(AccessToken.class);
         final TuleapUserDetails userDetails = new TuleapUserDetails("someUser");
-        final TuleapAuthenticationToken token  = new TuleapAuthenticationToken(userDetails, accessToken);
+        final TuleapAuthenticationToken token  = new TuleapAuthenticationToken(userDetails);
         final String groupName = "use-me#project_members";
 
         userDetails.addTuleapAuthority(new GrantedAuthorityImpl(groupName));
@@ -250,7 +250,7 @@ public class TuleapSecurityRealmTest {
 
         final AccessToken accessToken = mock(AccessToken.class);
         final TuleapUserDetails userDetails = new TuleapUserDetails("someUser");
-        final TuleapAuthenticationToken token  = new TuleapAuthenticationToken(userDetails, accessToken);
+        final TuleapAuthenticationToken token  = new TuleapAuthenticationToken(userDetails);
         final String groupName = "use-me#project_members";
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);

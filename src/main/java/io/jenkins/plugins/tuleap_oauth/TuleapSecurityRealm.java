@@ -32,7 +32,6 @@ import io.jenkins.plugins.tuleap_oauth.helper.UserAuthoritiesRetriever;
 import io.jenkins.plugins.tuleap_server_configuration.TuleapConfiguration;
 import jenkins.model.Jenkins;
 import jenkins.security.SecurityListener;
-import okhttp3.*;
 import org.acegisecurity.*;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
@@ -48,13 +47,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class TuleapSecurityRealm extends SecurityRealm {
-
-    private static final Logger LOGGER = Logger.getLogger(TuleapSecurityRealm.class.getName());
 
     private String clientId;
     private Secret clientSecret;
@@ -310,21 +305,6 @@ public class TuleapSecurityRealm extends SecurityRealm {
         return HttpResponses.redirectToContextRoot();
     }
 
-    private ResponseBody getResponseBody(Response response) throws IOException {
-        ResponseBody body = response.body();
-
-        if (body == null) {
-            LOGGER.log(Level.WARNING, "An error occurred");
-            return null;
-        }
-
-        if (!response.isSuccessful()) {
-            LOGGER.log(Level.WARNING, body.string());
-            return null;
-        }
-        return body;
-    }
-
     private Jenkins getJenkinsInstance() {
         return this.pluginHelper.getJenkinsInstance();
     }
@@ -337,10 +317,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
             .getAuthoritiesForUser(accessToken)
             .forEach(tuleapUserDetails::addTuleapAuthority);
 
-        TuleapAuthenticationToken tuleapAuth = new TuleapAuthenticationToken(
-            tuleapUserDetails,
-            accessToken
-        );
+        TuleapAuthenticationToken tuleapAuth = new TuleapAuthenticationToken(tuleapUserDetails);
 
         HttpSession session = request.getSession(false);
         if (session != null) {

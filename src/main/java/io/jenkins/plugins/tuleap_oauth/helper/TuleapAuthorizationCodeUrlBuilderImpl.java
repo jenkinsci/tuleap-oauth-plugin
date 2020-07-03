@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import io.jenkins.plugins.tuleap_oauth.TuleapAuthenticationErrorAction;
 import io.jenkins.plugins.tuleap_oauth.TuleapSecurityRealm;
 import io.jenkins.plugins.tuleap_oauth.pkce.PKCECodeBuilder;
-import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.UnsupportedEncodingException;
@@ -16,7 +15,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class TuleapAuthorizationCodeUrlBuilderImpl implements TuleapAuthorizationCodeUrlBuilder {
 
-    private static Logger LOGGER = Logger.getLogger(TuleapAuthorizationCodeUrlBuilder.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TuleapAuthorizationCodeUrlBuilder.class.getName());
 
     private final PluginHelper pluginHelper;
     private final PKCECodeBuilder codeBuilder;

@@ -1,7 +1,6 @@
 package io.jenkins.plugins.tuleap_oauth.checks;
 
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

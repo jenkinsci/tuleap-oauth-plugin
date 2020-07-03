@@ -17,7 +17,7 @@ public class TuleapUserPropertyStorageTest {
     public RestartableJenkinsRule j = new RestartableJenkinsRule();
 
     @Test
-    public void correctBehavior() throws Exception {
+    public void correctBehavior() {
         j.addStep(new Statement() {
             @Override
             public void evaluate() throws Throwable {
@@ -31,7 +31,7 @@ public class TuleapUserPropertyStorageTest {
     }
 
     @Test
-    public void correctBehaviorEvenAfterRestart() throws Exception {
+    public void correctBehaviorEvenAfterRestart() {
         j.addStep(new Statement() {
             @Override
             public void evaluate() throws Throwable {
