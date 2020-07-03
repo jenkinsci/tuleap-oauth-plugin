@@ -31,8 +31,8 @@ The plugin global configuration can be found here: https://docs.tuleap.org/user-
 
 ### Authentication
 
-To configure the authentication, you can found the documentation: https://docs.tuleap.org/user-guide/ci.html?plugins-configuration#authentication-configuration
+To configure the authentication, you can found the documentation here: https://docs.tuleap.org/user-guide/ci.html?plugins-configuration#authentication-configuration
 
 ### Authorization
 
-To configure the authorization matrix, you can found the documention: https://docs.tuleap.org/user-guide/ci.html?plugins-configuration#authorization-configuration
+To configure the authorization matrix, you can found the documentation here: https://docs.tuleap.org/user-guide/ci.html?plugins-configuration#authorization-configuration
