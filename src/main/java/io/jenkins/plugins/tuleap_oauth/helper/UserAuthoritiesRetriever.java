@@ -13,17 +13,19 @@ import java.util.stream.Collectors;
 
 public class UserAuthoritiesRetriever {
     private final UserApi userApi;
+    private final TuleapGroupHelper tuleapGroupHelper;
 
     @Inject
-    public UserAuthoritiesRetriever(final UserApi userApi) {
+    public UserAuthoritiesRetriever(final UserApi userApi, final TuleapGroupHelper tuleapGroupHelper) {
         this.userApi = userApi;
+        this.tuleapGroupHelper = tuleapGroupHelper;
     }
 
     public List<GrantedAuthority> getAuthoritiesForUser(final AccessToken accessToken) {
         final List<UserGroup> userGroups = this.userApi.getUserMembershipName(accessToken);
 
         return userGroups.stream()
-            .map(userGroup -> new GrantedAuthorityImpl(userGroup.getProjectName() + TuleapGroupDetails.GROUP_SEPARATOR + userGroup.getGroupName()))
+            .map(userGroup -> new GrantedAuthorityImpl(this.tuleapGroupHelper.buildJenkinsName(userGroup)))
             .collect(Collectors.toList());
     }
 }

@@ -1,10 +1,9 @@
 package io.jenkins.plugins.tuleap_oauth;
 
 import hudson.security.GroupDetails;
+import io.jenkins.plugins.tuleap_oauth.helper.TuleapGroupHelper;
 
 public class TuleapGroupDetails extends GroupDetails {
-    public static final String GROUP_SEPARATOR = "#";
-
     private final String groupName;
 
     public TuleapGroupDetails(final String groupName) {
@@ -18,6 +17,6 @@ public class TuleapGroupDetails extends GroupDetails {
 
     @Override
     public String getDisplayName() {
-        return String.join(" / ", this.groupName.split(GROUP_SEPARATOR));
+        return String.join(" / ", this.groupName.split(TuleapGroupHelper.GROUP_SEPARATOR));
     }
 }

@@ -1,9 +1,11 @@
 package io.jenkins.plugins.tuleap_oauth.helper;
 
 import com.google.common.collect.ImmutableList;
+import io.jenkins.plugins.tuleap_api.client.ProjectApi;
 import io.jenkins.plugins.tuleap_api.client.UserApi;
 import io.jenkins.plugins.tuleap_api.client.UserGroup;
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
+import io.jenkins.plugins.tuleap_api.client.authentication.AccessTokenApi;
 import org.acegisecurity.GrantedAuthority;
 import org.junit.Test;
 
@@ -19,7 +21,8 @@ public class UserAuthoritiesRetrieverTest {
     public void itReturnsAListOfAuthoritiesMadeOfTuleapGroups() {
         final UserApi userApi = mock(UserApi.class);
         final AccessToken accessToken = mock(AccessToken.class);
-        final UserAuthoritiesRetriever userAuthoritiesRetriever = new UserAuthoritiesRetriever(userApi);
+        final TuleapGroupHelper tuleapGroupHelper = new TuleapGroupHelper(mock(ProjectApi.class), mock(AccessTokenApi.class));
+        final UserAuthoritiesRetriever userAuthoritiesRetriever = new UserAuthoritiesRetriever(userApi, tuleapGroupHelper);
         final UserGroup userGroup1 = mock(UserGroup.class);
         final UserGroup userGroup2 = mock(UserGroup.class);
 

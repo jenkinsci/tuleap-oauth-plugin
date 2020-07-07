@@ -28,6 +28,7 @@ import io.jenkins.plugins.tuleap_oauth.checks.UserInfoChecker;
 import io.jenkins.plugins.tuleap_oauth.guice.TuleapOAuth2GuiceModule;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import io.jenkins.plugins.tuleap_oauth.helper.TuleapAuthorizationCodeUrlBuilder;
+import io.jenkins.plugins.tuleap_oauth.helper.TuleapGroupHelper;
 import io.jenkins.plugins.tuleap_oauth.helper.UserAuthoritiesRetriever;
 import io.jenkins.plugins.tuleap_server_configuration.TuleapConfiguration;
 import jenkins.model.Jenkins;
@@ -50,7 +51,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class TuleapSecurityRealm extends SecurityRealm {
 
@@ -69,7 +69,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     public static final String AUTHORIZATION_ENDPOINT = "oauth2/authorize?";
 
-    public static final String SCOPES = "read:project read:user_membership openid profile email";
+    public static final String SCOPES = "read:project read:user_membership openid profile email offline_access";
     public static final String CODE_CHALLENGE_METHOD = "S256";
 
     private AuthorizationCodeChecker authorizationCodeChecker;
@@ -84,6 +84,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     private AccessTokenApi accessTokenApi;
     private OpenIDClientApi openIDClientApi;
+    private TuleapGroupHelper tuleapGroupHelper;
 
     @DataBoundConstructor
     public TuleapSecurityRealm(String clientId, String clientSecret) {
@@ -146,6 +147,11 @@ public class TuleapSecurityRealm extends SecurityRealm {
         this.userAuthoritiesRetriever = userAuthoritiesRetriever;
     }
 
+    @Inject
+    public void setTuleapGroupHelper(TuleapGroupHelper tuleapGroupHelper) {
+        this.tuleapGroupHelper = tuleapGroupHelper;
+    }
+
     private void injectInstances() {
         if (this.pluginHelper == null ||
             this.authorizationCodeChecker == null ||
@@ -156,7 +162,8 @@ public class TuleapSecurityRealm extends SecurityRealm {
             this.accessTokenApi == null ||
             this.openIDClientApi == null ||
             this.tuleapUserPropertyStorage == null ||
-            this.userAuthoritiesRetriever == null
+            this.userAuthoritiesRetriever == null ||
+            this.tuleapGroupHelper == null
         ) {
             Guice.createInjector(new TuleapOAuth2GuiceModule()).injectMembers(this);
         }
@@ -181,6 +188,13 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     private void setClientSecret(String secretString) {
         this.clientSecret = Secret.fromString(secretString);
+    }
+
+    private TuleapOAuthClientConfiguration buildTuleapOAuthClientConfiguration() {
+        return new TuleapOAuthClientConfiguration(
+            this.clientId,
+            this.clientSecret
+        );
     }
 
     @Override
@@ -208,7 +222,13 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     @Override
     public GroupDetails loadGroupByGroupname(String groupName) {
+        this.injectInstances();
+
         final Authentication authenticatedUserAcegiToken = this.pluginHelper.getCurrentUserAuthenticationToken();
+
+        if (! this.tuleapGroupHelper.groupNameIsOfTuleapFormat(groupName)) {
+            throw new UserMayOrMayNotExistException("Not a Tuleap Group");
+        }
 
         if (authenticatedUserAcegiToken == null) {
             throw new UserMayOrMayNotExistException("No access token found for user");
@@ -220,21 +240,11 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
         final TuleapAuthenticationToken tuleapAuthenticationToken = (TuleapAuthenticationToken) authenticatedUserAcegiToken;
 
-        if (! this.tokenHasTuleapGroup(tuleapAuthenticationToken, groupName)) {
-            throw new UsernameNotFoundException("Group " + groupName + " not found for current Tuleap user");
+        if (this.tuleapGroupHelper.groupExistsOnTuleapServer(groupName, tuleapAuthenticationToken, this.buildTuleapOAuthClientConfiguration())) {
+            return new TuleapGroupDetails(groupName);
         }
 
-        return new TuleapGroupDetails(groupName);
-    }
-
-    private Boolean tokenHasTuleapGroup(TuleapAuthenticationToken token, String groupName) {
-        return token
-            .getTuleapUserDetails()
-            .getTuleapAuthorities()
-            .stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList())
-            .contains(groupName);
+        throw new UsernameNotFoundException("Could not find group " + groupName + " for Tuleap");
     }
 
     @Override
@@ -288,7 +298,12 @@ public class TuleapSecurityRealm extends SecurityRealm {
         final String codeVerifier = (String) request.getSession().getAttribute(CODE_VERIFIER_SESSION_ATTRIBUTE);
         final String authorizationCode = request.getParameter("code");
 
-        AccessToken accessToken = this.accessTokenApi.getAccessToken(codeVerifier, authorizationCode, this.clientId, this.clientSecret);
+        AccessToken accessToken = this.accessTokenApi.getAccessToken(
+            codeVerifier,
+            authorizationCode,
+            this.clientId,
+            this.clientSecret
+        );
 
         if (!this.accessTokenChecker.checkResponseBody(accessToken)) {
             return HttpResponses.redirectTo(this.getJenkinsInstance().getRootUrl() + TuleapAuthenticationErrorAction.REDIRECT_ON_AUTHENTICATION_ERROR);

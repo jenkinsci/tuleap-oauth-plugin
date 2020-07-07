@@ -7,7 +7,7 @@ public class TuleapAuthenticationToken extends AbstractAuthenticationToken {
 
     private static final long serialVersionUID = 1L;
 
-    private final transient AccessToken accessToken;
+    private transient AccessToken accessToken;
     private final TuleapUserDetails tuleapUserDetails;
 
     public TuleapAuthenticationToken(
@@ -37,5 +37,9 @@ public class TuleapAuthenticationToken extends AbstractAuthenticationToken {
 
     public AccessToken getAccessToken() {
         return this.accessToken;
+    }
+
+    public void setAccessToken(AccessToken accessToken) {
+        this.accessToken = accessToken;
     }
 }

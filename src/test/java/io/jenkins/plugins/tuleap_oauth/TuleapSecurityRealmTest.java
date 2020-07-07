@@ -10,10 +10,7 @@ import io.jenkins.plugins.tuleap_api.client.authentication.OpenIDClientApi;
 import io.jenkins.plugins.tuleap_oauth.checks.AccessTokenChecker;
 import io.jenkins.plugins.tuleap_oauth.checks.AuthorizationCodeChecker;
 import io.jenkins.plugins.tuleap_oauth.checks.IDTokenChecker;
-import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
-import io.jenkins.plugins.tuleap_oauth.helper.PluginHelperImpl;
-import io.jenkins.plugins.tuleap_oauth.helper.TuleapAuthorizationCodeUrlBuilder;
-import io.jenkins.plugins.tuleap_oauth.helper.UserAuthoritiesRetriever;
+import io.jenkins.plugins.tuleap_oauth.helper.*;
 import io.jenkins.plugins.tuleap_server_configuration.TuleapConfiguration;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
@@ -38,6 +35,7 @@ public class TuleapSecurityRealmTest {
     private OpenIDClientApi openIDClientApi;
     private TuleapUserPropertyStorage tuleapUserPropertyStorage;
     private UserAuthoritiesRetriever userAuthoritiesRetriever;
+    private TuleapGroupHelper tuleapGroupHelper;
 
     private Jenkins jenkins;
 
@@ -52,6 +50,7 @@ public class TuleapSecurityRealmTest {
         this.openIDClientApi = mock(OpenIDClientApi.class);
         this.tuleapUserPropertyStorage = mock(TuleapUserPropertyStorage.class);
         this.userAuthoritiesRetriever = mock(UserAuthoritiesRetriever.class);
+        this.tuleapGroupHelper = mock(TuleapGroupHelper.class);
         this.gson = mock(Gson.class);
 
         this.jenkins = mock(Jenkins.class);
@@ -69,6 +68,7 @@ public class TuleapSecurityRealmTest {
         securityRealm.setOpenIDClientApi(this.openIDClientApi);
         securityRealm.setTuleapUserPropertyStorage(this.tuleapUserPropertyStorage);
         securityRealm.setUserAuthoritiesRetriever(this.userAuthoritiesRetriever);
+        securityRealm.setTuleapGroupHelper(this.tuleapGroupHelper);
     }
 
     @Test
@@ -239,12 +239,14 @@ public class TuleapSecurityRealmTest {
         userDetails.addTuleapAuthority(new GrantedAuthorityImpl(groupName));
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
+        when(this.tuleapGroupHelper.groupNameIsOfTuleapFormat(groupName)).thenReturn(true);
+        when(this.tuleapGroupHelper.groupExistsOnTuleapServer(eq(groupName), eq(token), any())).thenReturn(true);
 
         assertEquals(tuleapSecurityRealm.loadGroupByGroupname(groupName).getName(), groupName);
     }
 
     @Test(expected = UsernameNotFoundException.class)
-    public void testItShouldNotReturnATuleapGroupDetailIfGroupIsNotInUserToken() {
+    public void testItShouldNotReturnATuleapGroupDetailIfGroupIsNotFoundableOnTuleap() {
         TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
         this.injectMock(tuleapSecurityRealm);
 
@@ -254,6 +256,8 @@ public class TuleapSecurityRealmTest {
         final String groupName = "use-me#project_members";
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
+        when(this.tuleapGroupHelper.groupNameIsOfTuleapFormat(groupName)).thenReturn(true);
+        when(this.tuleapGroupHelper.groupExistsOnTuleapServer(eq(groupName), eq(token), any())).thenReturn(false);
 
         tuleapSecurityRealm.loadGroupByGroupname(groupName);
     }
@@ -279,6 +283,22 @@ public class TuleapSecurityRealmTest {
         final String groupName = "use-me#project_members";
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(null);
+
+        tuleapSecurityRealm.loadGroupByGroupname(groupName);
+    }
+
+    @Test(expected = UserMayOrMayNotExistException.class)
+    public void testItShouldNotReturnATuleapGroupDetailIfGroupNameIsNotOfTuleapFormat() {
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
+        this.injectMock(tuleapSecurityRealm);
+
+        final AccessToken accessToken = mock(AccessToken.class);
+        final TuleapUserDetails userDetails = new TuleapUserDetails("someUser");
+        final TuleapAuthenticationToken token  = new TuleapAuthenticationToken(userDetails, accessToken);
+        final String groupName = "use-me#project_members";
+
+        when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
+        when(this.tuleapGroupHelper.groupNameIsOfTuleapFormat(groupName)).thenReturn(false);
 
         tuleapSecurityRealm.loadGroupByGroupname(groupName);
     }
