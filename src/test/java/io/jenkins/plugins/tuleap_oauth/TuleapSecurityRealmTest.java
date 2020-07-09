@@ -239,7 +239,7 @@ public class TuleapSecurityRealmTest {
         userDetails.addTuleapAuthority(new GrantedAuthorityImpl(groupName));
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
-        when(this.tuleapGroupHelper.groupNameIsOfTuleapFormat(groupName)).thenReturn(true);
+        when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(true);
         when(this.tuleapGroupHelper.groupExistsOnTuleapServer(eq(groupName), eq(token), any())).thenReturn(true);
 
         assertEquals(tuleapSecurityRealm.loadGroupByGroupname(groupName).getName(), groupName);
@@ -256,7 +256,7 @@ public class TuleapSecurityRealmTest {
         final String groupName = "use-me#project_members";
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
-        when(this.tuleapGroupHelper.groupNameIsOfTuleapFormat(groupName)).thenReturn(true);
+        when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(true);
         when(this.tuleapGroupHelper.groupExistsOnTuleapServer(eq(groupName), eq(token), any())).thenReturn(false);
 
         tuleapSecurityRealm.loadGroupByGroupname(groupName);
@@ -271,6 +271,7 @@ public class TuleapSecurityRealmTest {
         final String groupName = "use-me#project_members";
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
+        when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(true);
 
         tuleapSecurityRealm.loadGroupByGroupname(groupName);
     }
@@ -283,11 +284,12 @@ public class TuleapSecurityRealmTest {
         final String groupName = "use-me#project_members";
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(null);
+        when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(true);
 
         tuleapSecurityRealm.loadGroupByGroupname(groupName);
     }
 
-    @Test(expected = UserMayOrMayNotExistException.class)
+    @Test(expected = UsernameNotFoundException.class)
     public void testItShouldNotReturnATuleapGroupDetailIfGroupNameIsNotOfTuleapFormat() {
         TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
@@ -298,7 +300,7 @@ public class TuleapSecurityRealmTest {
         final String groupName = "use-me#project_members";
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
-        when(this.tuleapGroupHelper.groupNameIsOfTuleapFormat(groupName)).thenReturn(false);
+        when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(false);
 
         tuleapSecurityRealm.loadGroupByGroupname(groupName);
     }

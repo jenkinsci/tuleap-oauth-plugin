@@ -226,8 +226,8 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
         final Authentication authenticatedUserAcegiToken = this.pluginHelper.getCurrentUserAuthenticationToken();
 
-        if (! this.tuleapGroupHelper.groupNameIsOfTuleapFormat(groupName)) {
-            throw new UserMayOrMayNotExistException("Not a Tuleap Group");
+        if (! this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)) {
+            throw new UsernameNotFoundException("Not a Tuleap Group");
         }
 
         if (authenticatedUserAcegiToken == null) {

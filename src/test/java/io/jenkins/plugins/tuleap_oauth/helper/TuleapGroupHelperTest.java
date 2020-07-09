@@ -38,9 +38,9 @@ public class TuleapGroupHelperTest {
             mock(AccessTokenApi.class)
         );
 
-        assertTrue(tuleapGroupHelper.groupNameIsOfTuleapFormat("use-me#Contributors"));
-        assertFalse(tuleapGroupHelper.groupNameIsOfTuleapFormat("use-me#Contributors#test"));
-        assertFalse(tuleapGroupHelper.groupNameIsOfTuleapFormat("use-meContributorstest"));
+        assertTrue(tuleapGroupHelper.groupNameIsInTuleapFormat("use-me#Contributors"));
+        assertFalse(tuleapGroupHelper.groupNameIsInTuleapFormat("use-me#Contributors#test"));
+        assertFalse(tuleapGroupHelper.groupNameIsInTuleapFormat("use-meContributorstest"));
     }
 
     @Test

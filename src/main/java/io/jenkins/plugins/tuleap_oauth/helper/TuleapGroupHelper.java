@@ -30,19 +30,19 @@ public class TuleapGroupHelper {
         return userGroup.getProjectName() + GROUP_SEPARATOR + userGroup.getGroupName();
     }
 
-    public Boolean groupNameIsOfTuleapFormat(String groupName) {
+    public Boolean groupNameIsInTuleapFormat(String groupName) {
         return StringUtils.countMatches(groupName, GROUP_SEPARATOR) == 1;
     }
 
     public Boolean groupExistsOnTuleapServer(
-        final String groupname,
+        final String groupName,
         final TuleapAuthenticationToken authenticationToken,
         final TuleapOAuthClientConfiguration tuleapOAuthClientConfiguration
     ) {
         try {
             final ImmutableList<UserGroup> groups = this.getGroupsForTuleapProject(
                 this.getProjectFromTuleapServer(
-                    this.getTuleapProjectName(groupname),
+                    this.getTuleapProjectName(groupName),
                     authenticationToken,
                     tuleapOAuthClientConfiguration
                 ),
@@ -50,7 +50,7 @@ public class TuleapGroupHelper {
                 tuleapOAuthClientConfiguration
             );
 
-            return groups.stream().anyMatch(userGroup -> userGroup.getGroupName().equals(this.getTuleapGroupName(groupname)));
+            return groups.stream().anyMatch(userGroup -> userGroup.getGroupName().equals(this.getTuleapGroupName(groupName)));
         } catch (ProjectNotFoundException exception) {
             return false;
         }
