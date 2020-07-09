@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class PKCECodeBuilderImpl implements PKCECodeBuilder {
 
-    private PluginHelper pluginHelper;
+    private final PluginHelper pluginHelper;
 
     @Inject
     public PKCECodeBuilderImpl(PluginHelper pluginHelper){

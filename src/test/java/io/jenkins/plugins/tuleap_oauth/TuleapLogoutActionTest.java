@@ -1,6 +1,5 @@
 package io.jenkins.plugins.tuleap_oauth;
 
-import hudson.Plugin;
 import hudson.security.SecurityRealm;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import jenkins.model.Jenkins;

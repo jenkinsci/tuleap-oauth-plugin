@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import io.jenkins.plugins.tuleap_api.client.UserApi;
 import io.jenkins.plugins.tuleap_api.client.UserGroup;
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
-import io.jenkins.plugins.tuleap_oauth.TuleapGroupDetails;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
 

@@ -10,9 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AuthorizationCodeCheckerImpl implements AuthorizationCodeChecker {
-    private static Logger LOGGER = Logger.getLogger(AuthorizationCodeCheckerImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AuthorizationCodeCheckerImpl.class.getName());
 
-    private PluginHelper pluginHelper;
+    private final PluginHelper pluginHelper;
 
     @Inject
     public AuthorizationCodeCheckerImpl(PluginHelper pluginHelper) {

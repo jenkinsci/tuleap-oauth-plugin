@@ -4,7 +4,6 @@ import hudson.Extension;
 import hudson.model.User;
 import hudson.model.UserProperty;
 import hudson.model.UserPropertyDescriptor;
-import hudson.util.Secret;
 import org.jenkinsci.Symbol;
 
 public class TuleapUserProperty extends UserProperty {

@@ -4,7 +4,6 @@ import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 public class TuleapUserDetails implements UserDetails {
@@ -24,10 +23,6 @@ public class TuleapUserDetails implements UserDetails {
         return Stream
             .concat(this.authorities.stream(), this.tuleapAuthorities.stream())
             .toArray(GrantedAuthority[]::new);
-    }
-
-    public List<GrantedAuthority> getTuleapAuthorities() {
-        return this.tuleapAuthorities;
     }
 
     public void addAuthority(GrantedAuthority authority) {

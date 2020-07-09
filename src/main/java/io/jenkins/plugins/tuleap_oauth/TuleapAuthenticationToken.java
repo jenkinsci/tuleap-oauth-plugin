@@ -31,10 +31,6 @@ public class TuleapAuthenticationToken extends AbstractAuthenticationToken {
         return this.tuleapUserDetails.getUsername();
     }
 
-    public TuleapUserDetails getTuleapUserDetails() {
-        return this.tuleapUserDetails;
-    }
-
     public AccessToken getAccessToken() {
         return this.accessToken;
     }
