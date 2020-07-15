@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Objects;
 
 public class TuleapSecurityRealm extends SecurityRealm {
 
@@ -57,6 +58,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
     private static final String LOGIN_URL = "securityRealm/commenceLogin";
     public static final String REDIRECT_URI = "securityRealm/finishLogin";
 
+    private static final String REDIRECT_TO_SESSION_ATTRIBUTE = TuleapSecurityRealm.class.getName() + "-redirect-to";
     public static final String CODE_VERIFIER_SESSION_ATTRIBUTE = "code_verifier";
     public static final String STATE_SESSION_ATTRIBUTE = "state";
     public static final String JENKINS_REDIRECT_URI_ATTRIBUTE = "redirect_uri";
@@ -274,13 +276,19 @@ public class TuleapSecurityRealm extends SecurityRealm {
         return req.getContextPath() + "/" + TuleapLogoutAction.REDIRECT_ON_LOGOUT;
     }
 
-    public HttpResponse doCommenceLogin(StaplerRequest request) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public HttpResponse doCommenceLogin(StaplerRequest request, @QueryParameter String from, @Header("Referer") final String referer) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         this.injectInstances();
         final String authorizationCodeUri = this.authorizationCodeUrlBuilder.buildRedirectUrlAndStoreSessionAttribute(
             request,
             this.getTuleapUri(),
             this.clientId
         );
+
+        if (from != null) {
+            request.getSession().setAttribute(REDIRECT_TO_SESSION_ATTRIBUTE, from);
+        } else if (referer != null) {
+            request.getSession().setAttribute(REDIRECT_TO_SESSION_ATTRIBUTE, referer);
+        }
         return new HttpRedirect(authorizationCodeUri);
     }
 
@@ -311,11 +319,19 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
         UserInfo userInfo = this.openIDClientApi.getUserInfo(accessToken);
 
+        String jenkinsInstanceRootUrl = this.getJenkinsInstance().getRootUrl();
+
         if (!this.userInfoChecker.checkUserInfoResponseBody(userInfo, idToken)) {
-            return HttpResponses.redirectTo(this.getJenkinsInstance().getRootUrl() + TuleapAuthenticationErrorAction.REDIRECT_ON_AUTHENTICATION_ERROR);
+            return HttpResponses.redirectTo(jenkinsInstanceRootUrl + TuleapAuthenticationErrorAction.REDIRECT_ON_AUTHENTICATION_ERROR);
         }
 
+        String redirectTo = (String) request.getSession().getAttribute(REDIRECT_TO_SESSION_ATTRIBUTE);
+
         this.authenticateAsTuleapUser(request, userInfo, accessToken);
+
+        if (redirectTo != null && (Util.isSafeToRedirectTo(redirectTo) || (jenkinsInstanceRootUrl != null && redirectTo.startsWith(jenkinsInstanceRootUrl)))) {
+            return HttpResponses.redirectTo(redirectTo);
+        }
 
         return HttpResponses.redirectToContextRoot();
     }
