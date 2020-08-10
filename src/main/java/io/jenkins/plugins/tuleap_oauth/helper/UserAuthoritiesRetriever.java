@@ -21,7 +21,7 @@ public class UserAuthoritiesRetriever {
     }
 
     public List<GrantedAuthority> getAuthoritiesForUser(final AccessToken accessToken) {
-        final List<UserGroup> userGroups = this.userApi.getUserMembershipName(accessToken);
+        final List<UserGroup> userGroups = this.userApi.getUserMembership(accessToken);
 
         return userGroups.stream()
             .map(userGroup -> new GrantedAuthorityImpl(this.tuleapGroupHelper.buildJenkinsName(userGroup)))

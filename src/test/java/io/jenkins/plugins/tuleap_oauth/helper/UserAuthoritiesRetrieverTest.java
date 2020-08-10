@@ -31,7 +31,7 @@ public class UserAuthoritiesRetrieverTest {
         when(userGroup1.getGroupName()).thenReturn("project_members");
         when(userGroup2.getGroupName()).thenReturn("project_admins");
 
-        when(userApi.getUserMembershipName(accessToken)).thenReturn(ImmutableList.of(userGroup1,userGroup2));
+        when(userApi.getUserMembership(accessToken)).thenReturn(ImmutableList.of(userGroup1,userGroup2));
 
         final List<GrantedAuthority> authorities = userAuthoritiesRetriever.getAuthoritiesForUser(accessToken);
         assertEquals(authorities.size(), 2);
