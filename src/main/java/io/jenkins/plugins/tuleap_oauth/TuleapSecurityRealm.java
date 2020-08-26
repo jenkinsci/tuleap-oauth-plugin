@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Objects;
 
 public class TuleapSecurityRealm extends SecurityRealm {
 
@@ -69,19 +68,19 @@ public class TuleapSecurityRealm extends SecurityRealm {
     public static final String SCOPES = "read:project read:user_membership openid profile email offline_access";
     public static final String CODE_CHALLENGE_METHOD = "S256";
 
-    private AuthorizationCodeChecker authorizationCodeChecker;
-    private PluginHelper pluginHelper;
-    private AccessTokenChecker accessTokenChecker;
-    private Gson gson;
-    private IDTokenChecker IDTokenChecker;
-    private UserInfoChecker userInfoChecker;
-    private TuleapAuthorizationCodeUrlBuilder authorizationCodeUrlBuilder;
-    private TuleapUserPropertyStorage tuleapUserPropertyStorage;
-    private UserAuthoritiesRetriever userAuthoritiesRetriever;
+    private transient AuthorizationCodeChecker authorizationCodeChecker;
+    private transient PluginHelper pluginHelper;
+    private transient AccessTokenChecker accessTokenChecker;
+    private transient Gson gson;
+    private transient IDTokenChecker IDTokenChecker;
+    private transient UserInfoChecker userInfoChecker;
+    private transient TuleapAuthorizationCodeUrlBuilder authorizationCodeUrlBuilder;
+    private transient TuleapUserPropertyStorage tuleapUserPropertyStorage;
+    private transient UserAuthoritiesRetriever userAuthoritiesRetriever;
 
-    private AccessTokenApi accessTokenApi;
-    private OpenIDClientApi openIDClientApi;
-    private TuleapGroupHelper tuleapGroupHelper;
+    private transient AccessTokenApi accessTokenApi;
+    private transient OpenIDClientApi openIDClientApi;
+    private transient TuleapGroupHelper tuleapGroupHelper;
 
     @DataBoundConstructor
     public TuleapSecurityRealm(String clientId, String clientSecret) {
