@@ -1,6 +1,5 @@
 package io.jenkins.plugins.tuleap_oauth.helper;
 
-import com.google.common.collect.ImmutableList;
 import io.jenkins.plugins.tuleap_api.client.Project;
 import io.jenkins.plugins.tuleap_api.client.ProjectApi;
 import io.jenkins.plugins.tuleap_api.client.UserGroup;
@@ -10,6 +9,9 @@ import io.jenkins.plugins.tuleap_api.client.exceptions.ProjectNotFoundException;
 import io.jenkins.plugins.tuleap_oauth.TuleapAuthenticationToken;
 import io.jenkins.plugins.tuleap_oauth.TuleapOAuthClientConfiguration;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -73,7 +75,7 @@ public class TuleapGroupHelperTest {
 
         when(projectApi.getProjectByShortname(anyString(), any())).thenReturn(project);
         when(project.getId()).thenReturn(110);
-        when(projectApi.getProjectUserGroups(eq(110), any())).thenReturn(ImmutableList.of(
+        when(projectApi.getProjectUserGroups(eq(110), any())).thenReturn(Arrays.asList(
             userGroup1,
             userGroup2
         ));
@@ -98,7 +100,7 @@ public class TuleapGroupHelperTest {
 
         when(projectApi.getProjectByShortname(anyString(), any())).thenReturn(project);
         when(project.getId()).thenReturn(110);
-        when(projectApi.getProjectUserGroups(eq(110), any())).thenReturn(ImmutableList.of(
+        when(projectApi.getProjectUserGroups(eq(110), any())).thenReturn(Arrays.asList(
             userGroup1,
             userGroup2
         ));
@@ -121,7 +123,7 @@ public class TuleapGroupHelperTest {
         );
 
         when(projectApi.getProjectByShortname(anyString(), any())).thenThrow(new RuntimeException()).thenReturn(mock(Project.class));
-        when(projectApi.getProjectUserGroups(any(), any())).thenReturn(ImmutableList.of());
+        when(projectApi.getProjectUserGroups(any(), any())).thenReturn(Collections.emptyList());
         when(accessTokenApi.refreshToken(any(), any(), any())).thenReturn(accessToken);
 
         tuleapGroupHelper.groupExistsOnTuleapServer("whatever", tuleapAuthenticationToken, tuleapOAuthClientConfiguration);

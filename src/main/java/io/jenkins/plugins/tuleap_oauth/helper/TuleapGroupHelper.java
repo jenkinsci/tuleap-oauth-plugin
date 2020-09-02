@@ -1,6 +1,5 @@
 package io.jenkins.plugins.tuleap_oauth.helper;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import io.jenkins.plugins.tuleap_api.client.Project;
 import io.jenkins.plugins.tuleap_api.client.ProjectApi;
@@ -10,6 +9,8 @@ import io.jenkins.plugins.tuleap_api.client.exceptions.ProjectNotFoundException;
 import io.jenkins.plugins.tuleap_oauth.TuleapAuthenticationToken;
 import io.jenkins.plugins.tuleap_oauth.TuleapOAuthClientConfiguration;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.List;
 
 public class TuleapGroupHelper {
     public static final String GROUP_SEPARATOR = "#";
@@ -40,7 +41,7 @@ public class TuleapGroupHelper {
         final TuleapOAuthClientConfiguration tuleapOAuthClientConfiguration
     ) {
         try {
-            final ImmutableList<UserGroup> groups = this.getGroupsForTuleapProject(
+            final List<UserGroup> groups = this.getGroupsForTuleapProject(
                 this.getProjectFromTuleapServer(
                     this.getTuleapProjectName(groupName),
                     authenticationToken,
@@ -56,7 +57,7 @@ public class TuleapGroupHelper {
         }
     }
 
-    private ImmutableList<UserGroup> getGroupsForTuleapProject(
+    private List<UserGroup> getGroupsForTuleapProject(
         final Project project,
         final TuleapAuthenticationToken authenticationToken,
         final TuleapOAuthClientConfiguration tuleapOAuthClientConfiguration

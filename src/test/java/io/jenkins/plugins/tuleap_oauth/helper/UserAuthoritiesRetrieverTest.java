@@ -1,6 +1,5 @@
 package io.jenkins.plugins.tuleap_oauth.helper;
 
-import com.google.common.collect.ImmutableList;
 import io.jenkins.plugins.tuleap_api.client.ProjectApi;
 import io.jenkins.plugins.tuleap_api.client.UserApi;
 import io.jenkins.plugins.tuleap_api.client.UserGroup;
@@ -9,6 +8,7 @@ import io.jenkins.plugins.tuleap_api.client.authentication.AccessTokenApi;
 import org.acegisecurity.GrantedAuthority;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -31,7 +31,7 @@ public class UserAuthoritiesRetrieverTest {
         when(userGroup1.getGroupName()).thenReturn("project_members");
         when(userGroup2.getGroupName()).thenReturn("project_admins");
 
-        when(userApi.getUserMembership(accessToken)).thenReturn(ImmutableList.of(userGroup1,userGroup2));
+        when(userApi.getUserMembership(accessToken)).thenReturn(Arrays.asList(userGroup1, userGroup2));
 
         final List<GrantedAuthority> authorities = userAuthoritiesRetriever.getAuthoritiesForUser(accessToken);
         assertEquals(authorities.size(), 2);
