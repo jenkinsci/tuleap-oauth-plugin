@@ -48,7 +48,6 @@ public class TuleapAuthorizationCodeUrlBuilderImpl implements TuleapAuthorizatio
 
         return tuleapUri + TuleapSecurityRealm.AUTHORIZATION_ENDPOINT +
             "response_type=code" +
-            "&prompt=consent" +
             "&client_id=" + URLEncoder.encode(clientId, UTF_8.name()) +
             "&redirect_uri=" + redirectUri +
             "&scope=" + URLEncoder.encode(TuleapSecurityRealm.SCOPES, UTF_8.name()) +

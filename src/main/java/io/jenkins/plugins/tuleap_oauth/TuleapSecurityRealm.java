@@ -65,7 +65,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     public static final String AUTHORIZATION_ENDPOINT = "oauth2/authorize?";
 
-    public static final String SCOPES = "read:project read:user_membership openid profile email offline_access";
+    public static final String SCOPES = "read:project read:user_membership openid profile email";
     public static final String CODE_CHALLENGE_METHOD = "S256";
 
     private transient AuthorizationCodeChecker authorizationCodeChecker;

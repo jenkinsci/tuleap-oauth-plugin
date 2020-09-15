@@ -76,10 +76,9 @@ public class TuleapAuthorizationCodeUrlBuilderImplTest {
 
         String expectedUri = "https://tuleap.example.com/oauth2/authorize?" +
             "response_type=code" +
-            "&prompt=consent" +
             "&client_id=123" +
             "&redirect_uri=" + URLEncoder.encode("https://jenkins.example.com/securityRealm/finishLogin", UTF_8.name()) +
-            "&scope="+ URLEncoder.encode("read:project read:user_membership openid profile email offline_access", UTF_8.name()) +
+            "&scope="+ URLEncoder.encode("read:project read:user_membership openid profile email", UTF_8.name()) +
             "&state=Brabus" +
             "&code_challenge=B35S" +
             "&code_challenge_method=S256" +
