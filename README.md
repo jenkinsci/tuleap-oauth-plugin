@@ -1,6 +1,6 @@
 # tuleap-oauth-plugin
 
-> **NOTE** : This plugin is only available for **[Tuleap Entreprise](https://docs.tuleap.org/user-guide/tuleap-entreprise.html#tuleap-enterprise)** users.
+> **NOTE** : This plugin is only relevant for **[Tuleap Entreprise](https://docs.tuleap.org/user-guide/tuleap-entreprise.html#tuleap-enterprise)** users.
 
 Authentication plugin using [Tuleap Oauth2 App](https://docs.tuleap.org/user-guide/oauth2.html#oauth2-and-openidconnect).
 With this plugin:
@@ -17,17 +17,17 @@ For more information about the integration between Tuleap and Jenkins see: https
 
 ## Installation
 You can either install the plugin via the [Jenkins Plugins Marketplace](https://www.jenkins.io/doc/book/managing/plugins/#from-the-web-ui), or manually.
-If you install the plugin manually you have to :
+If you install the plugin manually you have to:
  - Clone the repository
  - In the repository directory: ``` mvn clean install ```
  - See https://www.jenkins.io/doc/book/managing/plugins/#advanced-installation
-If you want to install via the Jenkins CLI see : https://www.jenkins.io/doc/book/managing/plugins/#advanced-installation
+If you want to install via the Jenkins CLI see: https://www.jenkins.io/doc/book/managing/plugins/#advanced-installation
 
 ## Configuration
 
 The plugin global configuration can be found here: https://docs.tuleap.org/user-guide/ci.html?plugins-configuration#jenkins-configuration
 
-> **NOTE** : This plugin and Tuleap Git Branch Source are two independents plugins, you do not need to install Git Branch Source if you just want to use Tuleap Authentication.
+> **NOTE**: This plugin and Tuleap Git Branch Source are two independents plugins, you do not need to install Git Branch Source if you just want to use Tuleap Authentication.
 
 ### Authentication
 
