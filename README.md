@@ -2,6 +2,8 @@
 
 > **NOTE** : This plugin is only relevant for **[Tuleap Entreprise](https://docs.tuleap.org/user-guide/tuleap-entreprise.html#tuleap-enterprise)** users.
 
+Works with any recent version of Jenkins >= 2.190.3 (latest LTS preferred).
+
 Authentication plugin using [Tuleap Oauth2 App](https://docs.tuleap.org/user-guide/oauth2.html#oauth2-and-openidconnect).
 With this plugin:
 
