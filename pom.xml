@@ -9,9 +9,12 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>tuleap-oauth</artifactId>
-    <version>1.1.13-SNAPSHOT</version>
+    <version>${revision}${changelist}</version>
     <packaging>hpi</packaging>
     <properties>
+        <revision>1.1.13</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <gitHubRepo>jenkinsci/tuleap-oauth-plugin</gitHubRepo>
         <jenkins.version>2.176.4</jenkins.version>
         <java.level>8</java.level>
         <hpi.compatibleSinceVersion>1.0.0</hpi.compatibleSinceVersion>
@@ -22,10 +25,10 @@
 
     <url>https://github.com/jenkinsci/tuleap-oauth-plugin</url>
     <scm>
-        <connection>scm:git:ssh://github.com/jenkinsci/tuleap-oauth-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/jenkinsci/tuleap-oauth-plugin.git</developerConnection>
-        <url>https://github.com/jenkinsci/tuleap-oauth-plugin</url>
-        <tag>HEAD</tag>
+        <connection>scm:git:ssh://github.com/${gitHubRepo}.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/${gitHubRepo}.git</developerConnection>
+        <url>https://github.com/${gitHubRepo}</url>
+        <tag>${scmTag}</tag>
     </scm>
 
     <licenses>
