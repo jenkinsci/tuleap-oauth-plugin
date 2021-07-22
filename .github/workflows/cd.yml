@@ -5,9 +5,14 @@ on:
     types:
       - completed
 
+permissions: read-all
+
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+      pull-requests: read
     outputs:
       should_release: ${{ steps.verify-ci-status.outputs.result == 'success' && steps.interesting-categories.outputs.interesting == 'true' }}
     steps:
@@ -36,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [validate]
     if: needs.validate.outputs.should_release == 'true'
     steps:
