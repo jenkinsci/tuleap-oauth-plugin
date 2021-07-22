@@ -1,0 +1,4 @@
+_extends: .github
+name-template: Tuleap Authentication Plugin $NEXT_PATCH_VERSION
+tag-template: tuleap-oauth-$NEXT_PATCH_VERSION
+version-template: $MAJOR.$MINOR.$PATCH
