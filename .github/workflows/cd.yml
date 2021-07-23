@@ -44,6 +44,8 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [validate]
     if: needs.validate.outputs.should_release == 'true'
+    permissions:
+      contents: write
     steps:
       - name: Check out
         uses: actions/checkout@v2.3.4
