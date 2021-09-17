@@ -21,6 +21,10 @@ Please find the documentation at [https://docs.tuleap.org/user-guide/ci.html](ht
 
 Issues must be reported in [Request tracker of the Tuleap project](https://tuleap.net/plugins/tracker/?report=1136) under the category "Jenkins Authentication plugin".
 
+## How to install
+
+In order to install the plugin, please follow the [Jenkins documentation](https://www.jenkins.io/doc/book/managing/plugins/#installing-a-plugin)
+
 ## Authors
 
 * ROBINSON Clarck
