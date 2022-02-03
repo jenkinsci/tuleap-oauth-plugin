@@ -24,6 +24,8 @@ public class PluginHelperImpl implements PluginHelper {
 
     private final static Integer RECOMMENDED_LENGTH = 32;
 
+    private static final SecureRandom secureRandom = new SecureRandom();
+
     public Jenkins getJenkinsInstance() {
         Jenkins jenkins = Jenkins.getInstanceOrNull();
         if (jenkins == null) {
@@ -40,7 +42,6 @@ public class PluginHelperImpl implements PluginHelper {
     @Override
     public String buildRandomBase64EncodedURLSafeString() {
         byte[] code = new byte[RECOMMENDED_LENGTH];
-        SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(code);
         return Base64.encodeBase64URLSafeString(code);
     }
