@@ -13,7 +13,7 @@ public class AccessTokenCheckerImpl implements AccessTokenChecker {
 
     @Override
     public boolean checkResponseBody(AccessToken accessToken){
-        if (!accessToken.getTokenType().equals(ACCESS_TOKEN_TYPE)) {
+        if (!accessToken.getTokenType().equalsIgnoreCase(ACCESS_TOKEN_TYPE)) {
             LOGGER.log(Level.WARNING, "Bad token type returned");
             return false;
         }
