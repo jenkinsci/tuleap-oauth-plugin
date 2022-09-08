@@ -20,9 +20,18 @@ public class AccessTokenCheckerImplTest {
 
 
     @Test
-    public void testResponseBodyReturnsTrueWhenAllChecksAreOk() {
+    public void testResponseBodyReturnsTrueWhenAllChecksAreOkWithCapitalizedBearerTokenType() {
+        responseBodyReturnsTrueWhenAllChecksAreOk("Bearer");
+    }
+
+    @Test
+    public void testResponseBodyReturnsTrueWhenAllChecksAreOkWithAllLowercaseBearerTokenType() {
+        responseBodyReturnsTrueWhenAllChecksAreOk("bearer");
+    }
+
+    public void responseBodyReturnsTrueWhenAllChecksAreOk(String tokenType) {
         AccessToken representation = mock(AccessToken.class);
-        when(representation.getTokenType()).thenReturn("bearer");
+        when(representation.getTokenType()).thenReturn(tokenType);
         when(representation.getExpiresIn()).thenReturn("1202424");
         when(representation.getIdToken()).thenReturn("ignseojseogjiosevjazfoaz");
 
