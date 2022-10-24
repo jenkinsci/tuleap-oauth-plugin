@@ -19,6 +19,9 @@ import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.kohsuke.stapler.StaplerRequest;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -101,10 +104,11 @@ public class TuleapSecurityRealmTest {
         when(request.getContextPath()).thenReturn("https://jenkins.example.com");
 
         Authentication authentication = mock(Authentication.class);
+        when(authentication.toSpring()).thenReturn(this.getSpringAuthentication());
 
         when(this.jenkins.hasPermission(Jenkins.READ)).thenReturn(true);
 
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         assertEquals("https://jenkins.example.com/", tuleapSecurityRealm.getPostLogOutUrl(request, authentication));
@@ -119,7 +123,7 @@ public class TuleapSecurityRealmTest {
 
         when(this.jenkins.hasPermission(Jenkins.READ)).thenReturn(false);
 
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         assertEquals("https://jenkins.example.com/tuleapLogout", tuleapSecurityRealm.getPostLogOutUrl(request, authentication));
@@ -140,20 +144,20 @@ public class TuleapSecurityRealmTest {
             descriptor.doCheckClientId("tlp-client-id-fghhf").getMessage()
         );
         assertEquals(FormValidation.error(
-            Messages.TuleapSecurityRealmDescriptor_CheckClientIdFormat()).getMessage(),
+                Messages.TuleapSecurityRealmDescriptor_CheckClientIdFormat()).getMessage(),
             descriptor.doCheckClientId("freogjeuobnfb").getMessage()
         );
         assertEquals(FormValidation.error(
-            Messages.TuleapSecurityRealmDescriptor_CheckClientIdFormat()).getMessage(),
+                Messages.TuleapSecurityRealmDescriptor_CheckClientIdFormat()).getMessage(),
             descriptor.doCheckClientId("snv-tlp-client-id-10").getMessage()
         );
         assertEquals(FormValidation.error(
-            Messages.TuleapSecurityRealmDescriptor_CheckClientIdFormat()).getMessage(),
+                Messages.TuleapSecurityRealmDescriptor_CheckClientIdFormat()).getMessage(),
             descriptor.doCheckClientId("tlp-id-10").getMessage()
         );
 
         assertEquals(FormValidation.error(
-            Messages.TuleapSecurityRealmDescriptor_CheckClientIdFormat()).getMessage(),
+                Messages.TuleapSecurityRealmDescriptor_CheckClientIdFormat()).getMessage(),
             descriptor.doCheckClientId("tlp-client-id-").getMessage()
         );
     }
@@ -162,14 +166,14 @@ public class TuleapSecurityRealmTest {
     public void testTheValidationIsNotOkWhenTheClientIdIsEmpty() {
         TuleapSecurityRealm.DescriptorImpl descriptor = new TuleapSecurityRealm.DescriptorImpl();
         assertEquals(FormValidation.error(
-            Messages.TuleapSecurityRealmDescriptor_CheckClientIdEmpty()).getMessage(),
+                Messages.TuleapSecurityRealmDescriptor_CheckClientIdEmpty()).getMessage(),
             descriptor.doCheckClientId("").getMessage()
         );
     }
 
     @Test
     public void testItShouldReturnATuleapUserDetailIfUserIsFromTuleap() {
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         final TuleapAuthenticationToken token = mock(TuleapAuthenticationToken.class);
@@ -184,7 +188,7 @@ public class TuleapSecurityRealmTest {
 
     @Test(expected = UsernameNotFoundException.class)
     public void testItShouldNotReturnATuleapUserDetailIfUserIsNotFromTuleap() {
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         final TuleapAuthenticationToken token = mock(TuleapAuthenticationToken.class);
@@ -199,7 +203,7 @@ public class TuleapSecurityRealmTest {
 
     @Test(expected = UserMayOrMayNotExistException.class)
     public void testItShouldNotReturnATuleapUserDetailIfCurrentUserIsNotFromTuleap() {
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         final Authentication token = mock(Authentication.class);
@@ -214,7 +218,7 @@ public class TuleapSecurityRealmTest {
 
     @Test(expected = UserMayOrMayNotExistException.class)
     public void testItShouldNotReturnATuleapUserDetailIfCurrentUserHasNoToken() {
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         final String username = "aTuleapUser";
@@ -228,12 +232,12 @@ public class TuleapSecurityRealmTest {
 
     @Test
     public void testItShouldReturnATuleapGroupDetailIfGroupIsFromTuleap() {
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         final AccessToken accessToken = mock(AccessToken.class);
         final TuleapUserDetails userDetails = new TuleapUserDetails("someUser");
-        final TuleapAuthenticationToken token  = new TuleapAuthenticationToken(userDetails, accessToken);
+        final TuleapAuthenticationToken token = new TuleapAuthenticationToken(userDetails, accessToken);
         final String groupName = "use-me#project_members";
 
         userDetails.addTuleapAuthority(new GrantedAuthorityImpl(groupName));
@@ -247,12 +251,12 @@ public class TuleapSecurityRealmTest {
 
     @Test(expected = UsernameNotFoundException.class)
     public void testItShouldNotReturnATuleapGroupDetailIfGroupIsNotFoundableOnTuleap() {
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         final AccessToken accessToken = mock(AccessToken.class);
         final TuleapUserDetails userDetails = new TuleapUserDetails("someUser");
-        final TuleapAuthenticationToken token  = new TuleapAuthenticationToken(userDetails, accessToken);
+        final TuleapAuthenticationToken token = new TuleapAuthenticationToken(userDetails, accessToken);
         final String groupName = "use-me#project_members";
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
@@ -264,7 +268,7 @@ public class TuleapSecurityRealmTest {
 
     @Test(expected = UserMayOrMayNotExistException.class)
     public void testItShouldNotReturnATuleapGroupDetailIfCurrentUserIsNotFromTuleap() {
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         final Authentication token = mock(Authentication.class);
@@ -278,7 +282,7 @@ public class TuleapSecurityRealmTest {
 
     @Test(expected = UserMayOrMayNotExistException.class)
     public void testItShouldNotReturnATuleapGroupDetailIfCurrentUserHasNoToken() {
-        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
+        TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm("", "");
         this.injectMock(tuleapSecurityRealm);
 
         final String groupName = "use-me#project_members";
@@ -296,7 +300,7 @@ public class TuleapSecurityRealmTest {
 
         final AccessToken accessToken = mock(AccessToken.class);
         final TuleapUserDetails userDetails = new TuleapUserDetails("someUser");
-        final TuleapAuthenticationToken token  = new TuleapAuthenticationToken(userDetails, accessToken);
+        final TuleapAuthenticationToken token = new TuleapAuthenticationToken(userDetails, accessToken);
         final String groupName = "use-me#project_members";
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
@@ -304,4 +308,44 @@ public class TuleapSecurityRealmTest {
 
         tuleapSecurityRealm.loadGroupByGroupname(groupName);
     }
+
+    private org.springframework.security.core.Authentication getSpringAuthentication() {
+        return new org.springframework.security.core.Authentication() {
+            @Override
+            public Collection<? extends GrantedAuthority> getAuthorities() {
+                return null;
+            }
+
+            @Override
+            public Object getCredentials() {
+                return null;
+            }
+
+            @Override
+            public Object getDetails() {
+                return null;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return null;
+            }
+
+            @Override
+            public boolean isAuthenticated() {
+                return false;
+            }
+
+            @Override
+            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+
+            }
+
+            @Override
+            public String getName() {
+                return null;
+            }
+        };
+    }
+
 }

@@ -15,7 +15,7 @@
         <revision>1.1.18</revision>
         <changelist>-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/tuleap-oauth-plugin</gitHubRepo>
-        <jenkins.version>2.249.1</jenkins.version>
+        <jenkins.version>2.289.3</jenkins.version>
         <java.level>8</java.level>
         <hpi.compatibleSinceVersion>1.0.0</hpi.compatibleSinceVersion>
     </properties>
@@ -69,8 +69,8 @@
             </dependency>
             <dependency>
                 <groupId>io.jenkins.tools.bom</groupId>
-                <artifactId>bom-2.249.x</artifactId>
-                <version>984.vb5eaac999a7e</version>
+                <artifactId>bom-2.289.x</artifactId>
+                <version>1500.ve4d05cd32975</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
