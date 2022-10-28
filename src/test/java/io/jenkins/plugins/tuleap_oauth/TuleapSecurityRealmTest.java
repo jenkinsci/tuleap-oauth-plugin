@@ -19,6 +19,9 @@ import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.kohsuke.stapler.StaplerRequest;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -101,6 +104,7 @@ public class TuleapSecurityRealmTest {
         when(request.getContextPath()).thenReturn("https://jenkins.example.com");
 
         Authentication authentication = mock(Authentication.class);
+        when(authentication.toSpring()).thenReturn(this.getSpringAuthentication());
 
         when(this.jenkins.hasPermission(Jenkins.READ)).thenReturn(true);
 
@@ -304,4 +308,44 @@ public class TuleapSecurityRealmTest {
 
         tuleapSecurityRealm.loadGroupByGroupname(groupName);
     }
+
+    private org.springframework.security.core.Authentication getSpringAuthentication() {
+        return new org.springframework.security.core.Authentication() {
+            @Override
+            public Collection<? extends GrantedAuthority> getAuthorities() {
+                return null;
+            }
+
+            @Override
+            public Object getCredentials() {
+                return null;
+            }
+
+            @Override
+            public Object getDetails() {
+                return null;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return null;
+            }
+
+            @Override
+            public boolean isAuthenticated() {
+                return false;
+            }
+
+            @Override
+            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+
+            }
+
+            @Override
+            public String getName() {
+                return null;
+            }
+        };
+    }
+
 }
