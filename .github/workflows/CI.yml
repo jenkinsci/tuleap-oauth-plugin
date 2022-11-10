@@ -12,13 +12,13 @@ jobs:
   tests-with-coverage:
     strategy:
       matrix:
-        os: ["windows-2019", "ubuntu-18.04"]
+        os: ["windows-2019", "ubuntu-22.04"]
     name: Tests (${{ matrix.os }}) with coverage
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - uses: actions/setup-java@v3.3.0
+      - uses: actions/setup-java@v3.5.1
         with:
           distribution: 'temurin'
           java-version: '8'
