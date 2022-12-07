@@ -3,13 +3,12 @@ package io.jenkins.plugins.tuleap_oauth.checks;
 import com.auth0.jwk.InvalidPublicKeyException;
 import com.auth0.jwk.Jwk;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
-import com.auth0.jwt.exceptions.InvalidClaimException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.jenkins.plugins.tuleap_api.client.authentication.OpenIDClientApi;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
+import io.jenkins.plugins.tuleap_oauth.stubs.ClaimStub;
 import org.junit.Before;
 import org.junit.Test;
 import org.kohsuke.stapler.StaplerRequest;
@@ -27,6 +26,10 @@ import static org.mockito.Mockito.*;
 
 public class IDTokenCheckerImplTest {
 
+    private static final String ISSUER = "https://success.example.com";
+    private static final String NONCE = "1234_nonce";
+    private static final String AUDIENCE = "B35S";
+
     private PluginHelper pluginHelper;
     private OpenIDClientApi openIDClientApi;
 
@@ -36,20 +39,17 @@ public class IDTokenCheckerImplTest {
         this.openIDClientApi = mock(OpenIDClientApi.class);
     }
 
-    @Test(expected = InvalidClaimException.class)
+    @Test(expected = IncorrectClaimException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenTheIssuerIsNotExpected() throws InvalidPublicKeyException, IOException {
         IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
         when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://fail.example.com");
 
         DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getIssuer()).thenReturn("https://success.example.com");
         when(jwt.getAlgorithm()).thenReturn("RS256");
-        when(jwt.getAudience()).thenReturn(Collections.singletonList("B35S"));
 
-        Claim nonceClaim = mock(Claim.class);
-        when(nonceClaim.asString()).thenReturn("1234");
-        when(jwt.getClaim("nonce")).thenReturn(nonceClaim);
+        Claim issClaim = ClaimStub.withStringValue(ISSUER);
+        when(jwt.getClaim("iss")).thenReturn(issClaim);
 
         Algorithm algorithmKey1 = mock(Algorithm.class);
         when(algorithmKey1.getName()).thenReturn("RS256");
@@ -67,27 +67,22 @@ public class IDTokenCheckerImplTest {
 
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("nonce")).thenReturn("1234");
+        when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
 
-        String issuer = "https://success.example.com/";
-        String audience = "B35S";
-        jwtChecker.checkPayloadAndSignature(jwt, jwkList, issuer, audience, request);
+        jwtChecker.checkPayloadAndSignature(jwt, jwkList, ISSUER, AUDIENCE, request);
     }
 
     @Test(expected = AlgorithmMismatchException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenTheAlgorithmIsNotExpected() throws InvalidPublicKeyException, IOException {
         IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn(ISSUER);
 
         DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getIssuer()).thenReturn("https://success.example.com");
         when(jwt.getAlgorithm()).thenReturn("HS256");
-        when(jwt.getAudience()).thenReturn(Collections.singletonList("B35S"));
 
-        Claim nonceClaim = mock(Claim.class);
-        when(nonceClaim.asString()).thenReturn("rgneighiohetogh");
+        Claim nonceClaim = ClaimStub.withStringValue(NONCE);
         when(jwt.getClaim("nonce")).thenReturn(nonceClaim);
 
         Algorithm algorithmKey1 = mock(Algorithm.class);
@@ -102,28 +97,29 @@ public class IDTokenCheckerImplTest {
 
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("nonce")).thenReturn("1234");
+        when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
 
-        String issuer = "https://success.example.com";
-        String audience = "B35S";
-        jwtChecker.checkPayloadAndSignature(jwt, jwkList, issuer, audience, request);
+        jwtChecker.checkPayloadAndSignature(jwt, jwkList, ISSUER, AUDIENCE, request);
     }
 
-    @Test(expected = InvalidClaimException.class)
+    @Test(expected = IncorrectClaimException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenNonceValueIsNotExpected() throws InvalidPublicKeyException, IOException {
         IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn(ISSUER);
 
         DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getIssuer()).thenReturn("https://success.example.com");
         when(jwt.getAlgorithm()).thenReturn("RS256");
-        when(jwt.getAudience()).thenReturn(Collections.singletonList("B35S"));
 
-        Claim nonceClaim = mock(Claim.class);
-        when(nonceClaim.asString()).thenReturn("rgneighiohetogh");
+        Claim issClaim = ClaimStub.withStringValue(ISSUER);
+        when(jwt.getClaim("iss")).thenReturn(issClaim);
+
+        Claim nonceClaim = ClaimStub.withStringValue(NONCE);
         when(jwt.getClaim("nonce")).thenReturn(nonceClaim);
+
+        Claim audClaim = ClaimStub.withStringValue(AUDIENCE);
+        when(jwt.getClaim("aud")).thenReturn(audClaim);
 
         Algorithm algorithmKey1 = mock(Algorithm.class);
         when(algorithmKey1.getName()).thenReturn("RS256");
@@ -137,28 +133,24 @@ public class IDTokenCheckerImplTest {
 
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("nonce")).thenReturn("1234");
+        when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
 
-        String issuer = "https://success.example.com";
         String audience = "B35S";
-        jwtChecker.checkPayloadAndSignature(jwt, jwkList, issuer, audience, request);
+        jwtChecker.checkPayloadAndSignature(jwt, jwkList, ISSUER, audience, request);
     }
 
     @Test(expected = InvalidPublicKeyException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenThereIsNoRS256ValidKey() throws InvalidPublicKeyException, IOException {
         IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn(ISSUER);
 
         DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getIssuer()).thenReturn("https://success.example.com");
         when(jwt.getAlgorithm()).thenReturn("RS256");
-        when(jwt.getAudience()).thenReturn(Collections.singletonList("B35S"));
 
-        Claim nonceClaim = mock(Claim.class);
-        when(nonceClaim.asString()).thenReturn("1234");
-        when(jwt.getClaim("nonce")).thenReturn(nonceClaim);
+        Claim issClaim = ClaimStub.withStringValue(ISSUER);
+        when(jwt.getClaim("iss")).thenReturn(issClaim);
 
         Algorithm algorithmKey1 = mock(Algorithm.class);
         when(algorithmKey1.getName()).thenReturn("RS256");
@@ -181,27 +173,23 @@ public class IDTokenCheckerImplTest {
 
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("nonce")).thenReturn("1234");
+        when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
 
-        String issuer = "https://success.example.com/";
         String audience = "B35S";
-        jwtChecker.checkPayloadAndSignature(jwt, jwkList, issuer, audience, request);
+        jwtChecker.checkPayloadAndSignature(jwt, jwkList, ISSUER, AUDIENCE, request);
     }
 
     @Test(expected = InvalidPublicKeyException.class)
     public void testPayloadAndSignatureThrowsExceptionWhenThereIsNoRS256Key() throws InvalidPublicKeyException, IOException {
         IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn(ISSUER);
 
         DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getIssuer()).thenReturn("https://success.example.com");
         when(jwt.getAlgorithm()).thenReturn("RS256");
-        when(jwt.getAudience()).thenReturn(Collections.singletonList("B35S"));
 
-        Claim nonceClaim = mock(Claim.class);
-        when(nonceClaim.asString()).thenReturn("1234");
+        Claim nonceClaim = ClaimStub.withStringValue(NONCE);
         when(jwt.getClaim("nonce")).thenReturn(nonceClaim);
 
         Algorithm algorithmKey1 = mock(Algorithm.class);
@@ -220,28 +208,30 @@ public class IDTokenCheckerImplTest {
 
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("nonce")).thenReturn("1234");
+        when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
 
-        String issuer = "https://success.example.com/";
         String audience = "B35S";
-        jwtChecker.checkPayloadAndSignature(jwt, jwkList, issuer, audience, request);
+        jwtChecker.checkPayloadAndSignature(jwt, jwkList, ISSUER, AUDIENCE, request);
     }
 
-    @Test(expected = InvalidClaimException.class)
+    @Test(expected = IncorrectClaimException.class)
     public void testPayloadReturnsExceptionWhenUnexpectedAudience() throws InvalidPublicKeyException, IOException {
         IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn(ISSUER);
 
         DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getIssuer()).thenReturn("https://success.example.com");
         when(jwt.getAlgorithm()).thenReturn("RS256");
-        when(jwt.getAudience()).thenReturn(Collections.singletonList("B35S"));
 
-        Claim nonceClaim = mock(Claim.class);
-        when(nonceClaim.asString()).thenReturn("1234");
+        Claim issClaim = ClaimStub.withStringValue(ISSUER);
+        when(jwt.getClaim("iss")).thenReturn(issClaim);
+
+        Claim nonceClaim = ClaimStub.withStringValue(NONCE);
         when(jwt.getClaim("nonce")).thenReturn(nonceClaim);
+
+        Claim audClaim = ClaimStub.withStringValue(AUDIENCE);
+        when(jwt.getClaim("aud")).thenReturn(audClaim);
 
         Algorithm algorithmKey1 = mock(Algorithm.class);
         when(algorithmKey1.getName()).thenReturn("RS256");
@@ -259,27 +249,23 @@ public class IDTokenCheckerImplTest {
 
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("nonce")).thenReturn("1234");
+        when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
 
-        String issuer = "https://success.example.com/";
         String audience = "Bullit";
-        jwtChecker.checkPayloadAndSignature(jwt, jwkList, issuer, audience, request);
+        jwtChecker.checkPayloadAndSignature(jwt, jwkList, ISSUER, audience, request);
     }
 
-    @Test(expected = InvalidClaimException.class)
+    @Test(expected = MissingClaimException.class)
     public void testPayloadReturnsExceptionWhenThereIsNoIssuer() throws InvalidPublicKeyException, IOException {
         IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
         when(this.openIDClientApi.getProviderIssuer()).thenReturn(null);
 
         DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getIssuer()).thenReturn("https://success.example.com");
         when(jwt.getAlgorithm()).thenReturn("RS256");
-        when(jwt.getAudience()).thenReturn(Collections.singletonList("B35S"));
 
-        Claim nonceClaim = mock(Claim.class);
-        when(nonceClaim.asString()).thenReturn("1234");
+        Claim nonceClaim = ClaimStub.withStringValue(NONCE);
         when(jwt.getClaim("nonce")).thenReturn(nonceClaim);
 
         Algorithm algorithmKey1 = mock(Algorithm.class);
@@ -298,27 +284,25 @@ public class IDTokenCheckerImplTest {
 
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("nonce")).thenReturn("1234");
+        when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
 
-        String issuer = "https://success.example.com/";
-        String audience = "B35S";
-        jwtChecker.checkPayloadAndSignature(jwt, jwkList, issuer, audience, request);
+        jwtChecker.checkPayloadAndSignature(jwt, jwkList, ISSUER, AUDIENCE, request);
     }
 
-    @Test(expected = InvalidClaimException.class)
+    @Test(expected = MissingClaimException.class)
     public void testPayloadReturnsExceptionWhenThereIsNoAudience() throws InvalidPublicKeyException, IOException {
         IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn(ISSUER);
 
         DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getIssuer()).thenReturn("https://success.example.com");
         when(jwt.getAlgorithm()).thenReturn("RS256");
-        when(jwt.getAudience()).thenReturn(Collections.singletonList("B35S"));
 
-        Claim nonceClaim = mock(Claim.class);
-        when(nonceClaim.asString()).thenReturn("1234");
+        Claim issClaim = ClaimStub.withStringValue(ISSUER);
+        when(jwt.getClaim("iss")).thenReturn(issClaim);
+
+        Claim nonceClaim = ClaimStub.withStringValue(NONCE);
         when(jwt.getClaim("nonce")).thenReturn(nonceClaim);
 
         Algorithm algorithmKey1 = mock(Algorithm.class);
@@ -337,28 +321,37 @@ public class IDTokenCheckerImplTest {
 
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("nonce")).thenReturn("1234");
+        when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
 
-        String issuer = "https://success.example.com/";
         String audience = null;
-        jwtChecker.checkPayloadAndSignature(jwt, jwkList, issuer, audience, request);
+        jwtChecker.checkPayloadAndSignature(jwt, jwkList, ISSUER , audience, request);
     }
 
     @Test
     public void testPayloadAndSignatureAreOk() throws InvalidPublicKeyException, IOException {
         IDTokenCheckerImpl jwtChecker = new IDTokenCheckerImpl(this.pluginHelper, this.openIDClientApi);
 
-        when(this.openIDClientApi.getProviderIssuer()).thenReturn("https://success.example.com");
+        when(this.openIDClientApi.getProviderIssuer()).thenReturn(ISSUER);
 
         DecodedJWT jwt = mock(DecodedJWT.class);
-        when(jwt.getIssuer()).thenReturn("https://success.example.com");
         when(jwt.getAlgorithm()).thenReturn("RS256");
         when(jwt.getAudience()).thenReturn(Collections.singletonList("B35S"));
 
-        Claim nonceClaim = mock(Claim.class);
-        when(nonceClaim.asString()).thenReturn("1234");
+        Claim issClaim = ClaimStub.withStringValue(ISSUER);
+        when(jwt.getClaim("iss")).thenReturn(issClaim);
+
+        Claim nonceClaim = ClaimStub.withStringValue(NONCE);
         when(jwt.getClaim("nonce")).thenReturn(nonceClaim);
+
+        Claim audClaim = ClaimStub.withStringValue(AUDIENCE);
+        when(jwt.getClaim("aud")).thenReturn(audClaim);
+
+        Claim claim = ClaimStub.withStringValue("4485");
+        when(jwt.getClaim("exp")).thenReturn(claim);
+        when(jwt.getClaim("nbf")).thenReturn(claim);
+        when(jwt.getClaim("iat")).thenReturn(claim);
+
 
         Algorithm algorithmKey1 = mock(Algorithm.class);
         when(algorithmKey1.getName()).thenReturn("RS256");
@@ -376,11 +369,9 @@ public class IDTokenCheckerImplTest {
 
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("nonce")).thenReturn("1234");
+        when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
 
-        String issuer = "https://success.example.com/";
-        String audience = "B35S";
-        jwtChecker.checkPayloadAndSignature(jwt, jwkList, issuer, audience, request);
+        jwtChecker.checkPayloadAndSignature(jwt, jwkList, ISSUER, AUDIENCE, request);
     }
 }
