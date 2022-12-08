@@ -9,6 +9,8 @@ permissions: read-all
 
 jobs:
   maven-cd:
+    permissions:
+      contents: write
     uses: jenkins-infra/github-reusable-workflows/.github/workflows/maven-cd.yml@v1
     secrets:
       MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
