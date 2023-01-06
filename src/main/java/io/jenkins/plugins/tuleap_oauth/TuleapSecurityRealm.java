@@ -13,7 +13,7 @@ import hudson.model.Descriptor;
 import hudson.model.User;
 import hudson.security.GroupDetails;
 import hudson.security.SecurityRealm;
-import hudson.security.UserMayOrMayNotExistException;
+import hudson.security.UserMayOrMayNotExistException2;
 import hudson.tasks.Mailer;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
@@ -33,14 +33,17 @@ import io.jenkins.plugins.tuleap_oauth.helper.UserAuthoritiesRetriever;
 import io.jenkins.plugins.tuleap_server_configuration.TuleapConfiguration;
 import jenkins.model.Jenkins;
 import jenkins.security.SecurityListener;
-import org.acegisecurity.*;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.userdetails.UserDetails;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.*;
 import org.kohsuke.stapler.verb.POST;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
@@ -194,17 +197,17 @@ public class TuleapSecurityRealm extends SecurityRealm {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) {
+    public UserDetails loadUserByUsername2(String username) {
         this.injectInstances();
 
-        final Authentication authenticatedUserAcegiToken = this.pluginHelper.getCurrentUserAuthenticationToken();
+        final Authentication authenticatedUserSpringToken = this.pluginHelper.getCurrentUserAuthenticationToken();
 
-        if (authenticatedUserAcegiToken == null) {
-            throw new UserMayOrMayNotExistException("No access token found for user " + username);
+        if (authenticatedUserSpringToken == null) {
+            throw new UserMayOrMayNotExistException2("No access token found for user " + username);
         }
 
-        if (!(authenticatedUserAcegiToken instanceof TuleapAuthenticationToken)) {
-            throw new UserMayOrMayNotExistException("Unknown token type for user " + username);
+        if (!(authenticatedUserSpringToken instanceof TuleapAuthenticationToken)) {
+            throw new UserMayOrMayNotExistException2("Unknown token type for user " + username);
         }
 
         final User user = this.pluginHelper.getUser(username);
@@ -217,24 +220,24 @@ public class TuleapSecurityRealm extends SecurityRealm {
     }
 
     @Override
-    public GroupDetails loadGroupByGroupname(String groupName) {
+    public GroupDetails loadGroupByGroupname2(String groupName, boolean fetchMembers) {
         this.injectInstances();
 
-        final Authentication authenticatedUserAcegiToken = this.pluginHelper.getCurrentUserAuthenticationToken();
+        final Authentication authenticatedUserSpringToken = this.pluginHelper.getCurrentUserAuthenticationToken();
 
         if (! this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)) {
             throw new UsernameNotFoundException("Not a Tuleap Group");
         }
 
-        if (authenticatedUserAcegiToken == null) {
-            throw new UserMayOrMayNotExistException("No access token found for user");
+        if (authenticatedUserSpringToken == null) {
+            throw new UserMayOrMayNotExistException2("No access token found for user");
         }
 
-        if (!(authenticatedUserAcegiToken instanceof TuleapAuthenticationToken)) {
-            throw new UserMayOrMayNotExistException("Unknown token type for user");
+        if (!(authenticatedUserSpringToken instanceof TuleapAuthenticationToken)) {
+            throw new UserMayOrMayNotExistException2("Unknown token type for user");
         }
 
-        final TuleapAuthenticationToken tuleapAuthenticationToken = (TuleapAuthenticationToken) authenticatedUserAcegiToken;
+        final TuleapAuthenticationToken tuleapAuthenticationToken = (TuleapAuthenticationToken) authenticatedUserSpringToken;
 
         if (this.tuleapGroupHelper.groupExistsOnTuleapServer(groupName, tuleapAuthenticationToken, this.buildTuleapOAuthClientConfiguration())) {
             return new TuleapGroupDetails(groupName);
@@ -264,13 +267,13 @@ public class TuleapSecurityRealm extends SecurityRealm {
     }
 
     @Override
-    protected String getPostLogOutUrl(StaplerRequest req, Authentication auth) {
+    protected String getPostLogOutUrl2(StaplerRequest req, Authentication auth) {
         this.injectInstances();
 
         auth.setAuthenticated(false);
         Jenkins jenkins = this.getJenkinsInstance();
         if (jenkins.hasPermission(Jenkins.READ)) {
-            return super.getPostLogOutUrl(req, auth);
+            return super.getPostLogOutUrl2(req, auth);
         }
         return req.getContextPath() + "/" + TuleapLogoutAction.REDIRECT_ON_LOGOUT;
     }
@@ -341,7 +344,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
     private void authenticateAsTuleapUser(StaplerRequest request, UserInfo userInfo, AccessToken accessToken) throws IOException {
         final TuleapUserDetails tuleapUserDetails = new TuleapUserDetails(userInfo.getUsername());
-        tuleapUserDetails.addAuthority(SecurityRealm.AUTHENTICATED_AUTHORITY);
+        tuleapUserDetails.addAuthority(SecurityRealm.AUTHENTICATED_AUTHORITY2);
 
         this.userAuthoritiesRetriever
             .getAuthoritiesForUser(accessToken)
@@ -373,7 +376,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
 
         this.tuleapUserPropertyStorage.save(tuleapUser);
 
-        SecurityListener.fireAuthenticated(tuleapUserDetails);
+        SecurityListener.fireAuthenticated2(tuleapUserDetails);
     }
 
     @Extension

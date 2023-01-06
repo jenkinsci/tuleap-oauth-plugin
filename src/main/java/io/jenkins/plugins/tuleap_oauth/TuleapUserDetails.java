@@ -1,10 +1,11 @@
 package io.jenkins.plugins.tuleap_oauth;
 
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.userdetails.UserDetails;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.stream.Stream;
+import java.util.Collection;
 
 public class TuleapUserDetails implements UserDetails {
 
@@ -19,10 +20,9 @@ public class TuleapUserDetails implements UserDetails {
     }
 
     @Override
-    public GrantedAuthority[] getAuthorities() {
-        return Stream
-            .concat(this.authorities.stream(), this.tuleapAuthorities.stream())
-            .toArray(GrantedAuthority[]::new);
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        this.authorities.addAll(this.tuleapAuthorities);
+        return this.authorities;
     }
 
     public void addAuthority(GrantedAuthority authority) {

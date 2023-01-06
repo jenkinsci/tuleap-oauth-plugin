@@ -8,7 +8,7 @@ import io.jenkins.plugins.tuleap_server_configuration.TuleapConfiguration;
 import jenkins.model.Jenkins;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.acegisecurity.Authentication;
+import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 

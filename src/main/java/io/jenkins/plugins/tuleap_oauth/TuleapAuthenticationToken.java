@@ -1,7 +1,7 @@
 package io.jenkins.plugins.tuleap_oauth;
 
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
-import org.acegisecurity.providers.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class TuleapAuthenticationToken extends AbstractAuthenticationToken {
 
