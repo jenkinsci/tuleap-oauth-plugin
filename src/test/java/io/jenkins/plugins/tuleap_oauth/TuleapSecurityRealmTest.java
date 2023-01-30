@@ -2,7 +2,7 @@ package io.jenkins.plugins.tuleap_oauth;
 
 import com.google.gson.Gson;
 import hudson.model.User;
-import hudson.security.UserMayOrMayNotExistException;
+import hudson.security.UserMayOrMayNotExistException2;
 import hudson.util.FormValidation;
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessTokenApi;
@@ -13,15 +13,12 @@ import io.jenkins.plugins.tuleap_oauth.checks.IDTokenChecker;
 import io.jenkins.plugins.tuleap_oauth.helper.*;
 import io.jenkins.plugins.tuleap_server_configuration.TuleapConfiguration;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthorityImpl;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.kohsuke.stapler.StaplerRequest;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -104,14 +101,13 @@ public class TuleapSecurityRealmTest {
         when(request.getContextPath()).thenReturn("https://jenkins.example.com");
 
         Authentication authentication = mock(Authentication.class);
-        when(authentication.toSpring()).thenReturn(this.getSpringAuthentication());
 
         when(this.jenkins.hasPermission(Jenkins.READ)).thenReturn(true);
 
         TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
         this.injectMock(tuleapSecurityRealm);
 
-        assertEquals("https://jenkins.example.com/", tuleapSecurityRealm.getPostLogOutUrl(request, authentication));
+        assertEquals("https://jenkins.example.com/", tuleapSecurityRealm.getPostLogOutUrl2(request, authentication));
     }
 
     @Test
@@ -126,7 +122,7 @@ public class TuleapSecurityRealmTest {
         TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
         this.injectMock(tuleapSecurityRealm);
 
-        assertEquals("https://jenkins.example.com/tuleapLogout", tuleapSecurityRealm.getPostLogOutUrl(request, authentication));
+        assertEquals("https://jenkins.example.com/tuleapLogout", tuleapSecurityRealm.getPostLogOutUrl2(request, authentication));
     }
 
     @Test
@@ -183,7 +179,7 @@ public class TuleapSecurityRealmTest {
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
         when(this.tuleapUserPropertyStorage.has(user)).thenReturn(true);
 
-        assertEquals(tuleapSecurityRealm.loadUserByUsername(username).getUsername(), username);
+        assertEquals(tuleapSecurityRealm.loadUserByUsername2(username).getUsername(), username);
     }
 
     @Test(expected = UsernameNotFoundException.class)
@@ -198,10 +194,10 @@ public class TuleapSecurityRealmTest {
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
         when(this.tuleapUserPropertyStorage.has(user)).thenReturn(false);
 
-        tuleapSecurityRealm.loadUserByUsername(username);
+        tuleapSecurityRealm.loadUserByUsername2(username);
     }
 
-    @Test(expected = UserMayOrMayNotExistException.class)
+    @Test(expected = UserMayOrMayNotExistException2.class)
     public void testItShouldNotReturnATuleapUserDetailIfCurrentUserIsNotFromTuleap() {
         TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
         this.injectMock(tuleapSecurityRealm);
@@ -213,10 +209,10 @@ public class TuleapSecurityRealmTest {
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
         when(this.tuleapUserPropertyStorage.has(user)).thenReturn(false);
 
-        tuleapSecurityRealm.loadUserByUsername(username);
+        tuleapSecurityRealm.loadUserByUsername2(username);
     }
 
-    @Test(expected = UserMayOrMayNotExistException.class)
+    @Test(expected = UserMayOrMayNotExistException2.class)
     public void testItShouldNotReturnATuleapUserDetailIfCurrentUserHasNoToken() {
         TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
         this.injectMock(tuleapSecurityRealm);
@@ -227,7 +223,7 @@ public class TuleapSecurityRealmTest {
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(null);
         when(this.tuleapUserPropertyStorage.has(user)).thenReturn(false);
 
-        tuleapSecurityRealm.loadUserByUsername(username);
+        tuleapSecurityRealm.loadUserByUsername2(username);
     }
 
     @Test
@@ -240,13 +236,13 @@ public class TuleapSecurityRealmTest {
         final TuleapAuthenticationToken token  = new TuleapAuthenticationToken(userDetails, accessToken);
         final String groupName = "use-me#project_members";
 
-        userDetails.addTuleapAuthority(new GrantedAuthorityImpl(groupName));
+        userDetails.addTuleapAuthority(new SimpleGrantedAuthority(groupName));
 
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
         when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(true);
         when(this.tuleapGroupHelper.groupExistsOnTuleapServer(eq(groupName), eq(token), any())).thenReturn(true);
 
-        assertEquals(tuleapSecurityRealm.loadGroupByGroupname(groupName).getName(), groupName);
+        assertEquals(tuleapSecurityRealm.loadGroupByGroupname2(groupName, false).getName(), groupName);
     }
 
     @Test(expected = UsernameNotFoundException.class)
@@ -263,10 +259,10 @@ public class TuleapSecurityRealmTest {
         when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(true);
         when(this.tuleapGroupHelper.groupExistsOnTuleapServer(eq(groupName), eq(token), any())).thenReturn(false);
 
-        tuleapSecurityRealm.loadGroupByGroupname(groupName);
+        tuleapSecurityRealm.loadGroupByGroupname2(groupName, false);
     }
 
-    @Test(expected = UserMayOrMayNotExistException.class)
+    @Test(expected = UserMayOrMayNotExistException2.class)
     public void testItShouldNotReturnATuleapGroupDetailIfCurrentUserIsNotFromTuleap() {
         TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
         this.injectMock(tuleapSecurityRealm);
@@ -277,10 +273,10 @@ public class TuleapSecurityRealmTest {
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
         when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(true);
 
-        tuleapSecurityRealm.loadGroupByGroupname(groupName);
+        tuleapSecurityRealm.loadGroupByGroupname2(groupName, false);
     }
 
-    @Test(expected = UserMayOrMayNotExistException.class)
+    @Test(expected = UserMayOrMayNotExistException2.class)
     public void testItShouldNotReturnATuleapGroupDetailIfCurrentUserHasNoToken() {
         TuleapSecurityRealm tuleapSecurityRealm = new TuleapSecurityRealm( "", "");
         this.injectMock(tuleapSecurityRealm);
@@ -290,7 +286,7 @@ public class TuleapSecurityRealmTest {
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(null);
         when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(true);
 
-        tuleapSecurityRealm.loadGroupByGroupname(groupName);
+        tuleapSecurityRealm.loadGroupByGroupname2(groupName, false);
     }
 
     @Test(expected = UsernameNotFoundException.class)
@@ -306,46 +302,6 @@ public class TuleapSecurityRealmTest {
         when(this.pluginHelper.getCurrentUserAuthenticationToken()).thenReturn(token);
         when(this.tuleapGroupHelper.groupNameIsInTuleapFormat(groupName)).thenReturn(false);
 
-        tuleapSecurityRealm.loadGroupByGroupname(groupName);
+        tuleapSecurityRealm.loadGroupByGroupname2(groupName, false);
     }
-
-    private org.springframework.security.core.Authentication getSpringAuthentication() {
-        return new org.springframework.security.core.Authentication() {
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                return null;
-            }
-
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return null;
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return false;
-            }
-
-            @Override
-            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-
-            }
-
-            @Override
-            public String getName() {
-                return null;
-            }
-        };
-    }
-
 }

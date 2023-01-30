@@ -4,8 +4,8 @@ import io.jenkins.plugins.tuleap_api.client.ProjectApi;
 import io.jenkins.plugins.tuleap_api.client.UserApi;
 import io.jenkins.plugins.tuleap_api.client.UserGroup;
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
-import org.acegisecurity.GrantedAuthority;
 import org.junit.Test;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Arrays;
 import java.util.List;

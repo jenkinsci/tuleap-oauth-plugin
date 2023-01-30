@@ -1,8 +1,11 @@
 package io.jenkins.plugins.tuleap_oauth;
 
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
 import org.junit.Test;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+
 import static org.junit.Assert.*;
 
 public class TuleapUserDetailsTest {
@@ -11,13 +14,16 @@ public class TuleapUserDetailsTest {
     public void testItShouldConcatenateAllAuthorities() {
         TuleapUserDetails tuleapUserDetails = new TuleapUserDetails("a User");
 
-        tuleapUserDetails.addAuthority(new GrantedAuthorityImpl("authenticated"));
-        tuleapUserDetails.addTuleapAuthority(new GrantedAuthorityImpl("use-me#project_members"));
+        GrantedAuthority authority1 = new SimpleGrantedAuthority("authenticated");
+        tuleapUserDetails.addAuthority(authority1);
 
-        GrantedAuthority[] authorities = tuleapUserDetails.getAuthorities();
+        GrantedAuthority authority2 = new SimpleGrantedAuthority("use-me#project_members");
+        tuleapUserDetails.addTuleapAuthority(authority2);
 
-        assertEquals(authorities.length, 2);
-        assertEquals(authorities[0].getAuthority(), "authenticated");
-        assertEquals(authorities[1].getAuthority(), "use-me#project_members");
+        Collection<? extends GrantedAuthority> authorities = tuleapUserDetails.getAuthorities();
+
+        assertEquals(authorities.size(), 2);
+        assertTrue(authorities.contains(authority1));
+        assertTrue(authorities.contains(authority2));
     }
 }

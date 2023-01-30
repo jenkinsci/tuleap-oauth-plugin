@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import io.jenkins.plugins.tuleap_api.client.UserApi;
 import io.jenkins.plugins.tuleap_api.client.UserGroup;
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ public class UserAuthoritiesRetriever {
         final List<UserGroup> userGroups = this.userApi.getUserMembership(accessToken);
 
         return userGroups.stream()
-            .map(userGroup -> new GrantedAuthorityImpl(this.tuleapGroupHelper.buildJenkinsName(userGroup)))
+            .map(userGroup -> new SimpleGrantedAuthority(this.tuleapGroupHelper.buildJenkinsName(userGroup)))
             .collect(Collectors.toList());
     }
 }
