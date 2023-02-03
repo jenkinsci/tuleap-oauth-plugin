@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-java@v3.8.0
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
       - name: Build
         run: mvn -Pjacoco clean verify --batch-mode --show-version
       - name: Upload coverage to Codecov
