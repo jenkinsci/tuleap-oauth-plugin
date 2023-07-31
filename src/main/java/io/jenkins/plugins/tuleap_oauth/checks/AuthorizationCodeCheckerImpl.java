@@ -6,8 +6,11 @@ import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.security.MessageDigest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class AuthorizationCodeCheckerImpl implements AuthorizationCodeChecker {
     private static final Logger LOGGER = Logger.getLogger(AuthorizationCodeCheckerImpl.class.getName());
@@ -54,7 +57,7 @@ public class AuthorizationCodeCheckerImpl implements AuthorizationCodeChecker {
             return false;
         }
 
-        if (!state.equals(expectedState)) {
+        if (!MessageDigest.isEqual(state.getBytes(UTF_8), expectedState.getBytes(UTF_8))) {
             LOGGER.log(Level.WARNING, "expected state and provided state does not match");
             return false;
         }
