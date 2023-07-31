@@ -12,7 +12,7 @@
     <version>${revision}</version>
     <packaging>hpi</packaging>
     <properties>
-        <revision>1.1.20</revision>
+        <revision>1.1.21</revision>
         <changelist>-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/tuleap-oauth-plugin</gitHubRepo>
         <jenkins.version>2.361.4</jenkins.version>
