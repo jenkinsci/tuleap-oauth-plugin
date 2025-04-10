@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import io.jenkins.plugins.tuleap_oauth.TuleapAuthenticationErrorAction;
 import io.jenkins.plugins.tuleap_oauth.TuleapSecurityRealm;
 import io.jenkins.plugins.tuleap_oauth.pkce.PKCECodeBuilder;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -26,7 +26,7 @@ public class TuleapAuthorizationCodeUrlBuilderImpl implements TuleapAuthorizatio
         this.codeBuilder = codeBuilder;
     }
 
-    public String buildRedirectUrlAndStoreSessionAttribute(StaplerRequest request, String tuleapUri, String clientId) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public String buildRedirectUrlAndStoreSessionAttribute(StaplerRequest2 request, String tuleapUri, String clientId) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         if (!this.pluginHelper.isHttpsUrl(tuleapUri)) {
             LOGGER.warning("The provided Tuleap URL is not in HTTPS");
             return this.pluginHelper.getJenkinsInstance().getRootUrl() + TuleapAuthenticationErrorAction.REDIRECT_ON_AUTHENTICATION_ERROR;

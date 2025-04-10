@@ -5,9 +5,9 @@ import io.jenkins.plugins.tuleap_oauth.pkce.PKCECodeBuilder;
 import jenkins.model.Jenkins;
 import org.junit.Before;
 import org.junit.Test;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
@@ -34,7 +34,7 @@ public class TuleapAuthorizationCodeUrlBuilderImplTest {
 
     @Test
     public void testItReturnsTheAuthenticationErrorActionUrlWhenUrlIsNotHttps() throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
 
         when(this.pluginHelper.isHttpsUrl("http://fail.example.com")).thenReturn(false);
 
@@ -54,7 +54,7 @@ public class TuleapAuthorizationCodeUrlBuilderImplTest {
 
     @Test
     public void testItShouldReturnTheAuthorizationCodeUriWithTheRightParameters() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
 
         String tuleapUri = "https://tuleap.example.com/";
         when(this.pluginHelper.isHttpsUrl(tuleapUri)).thenReturn(true);

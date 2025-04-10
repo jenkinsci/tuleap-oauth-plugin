@@ -45,12 +45,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Collection;
 
 public class TuleapSecurityRealm extends SecurityRealm {
 
@@ -267,7 +268,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
     }
 
     @Override
-    protected String getPostLogOutUrl2(StaplerRequest req, Authentication auth) {
+    protected String getPostLogOutUrl2(StaplerRequest2 req, Authentication auth) {
         this.injectInstances();
 
         auth.setAuthenticated(false);
@@ -278,7 +279,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
         return req.getContextPath() + "/" + TuleapLogoutAction.REDIRECT_ON_LOGOUT;
     }
 
-    public HttpResponse doCommenceLogin(StaplerRequest request, @QueryParameter String from, @Header("Referer") final String referer) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public HttpResponse doCommenceLogin(StaplerRequest2 request, @QueryParameter String from, @Header("Referer") final String referer) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         this.injectInstances();
         final String authorizationCodeUri = this.authorizationCodeUrlBuilder.buildRedirectUrlAndStoreSessionAttribute(
             request,
@@ -295,7 +296,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
     }
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE") // see https://github.com/spotbugs/spotbugs/issues/651
-    public HttpResponse doFinishLogin(StaplerRequest request, StaplerResponse response) throws IOException, JwkException, ServletException {
+    public HttpResponse doFinishLogin(StaplerRequest2 request, StaplerResponse2 response) throws IOException, JwkException, ServletException {
         if (!this.authorizationCodeChecker.checkAuthorizationCode(request)) {
             return HttpResponses.redirectTo(this.getJenkinsInstance().getRootUrl() + TuleapAuthenticationErrorAction.REDIRECT_ON_AUTHENTICATION_ERROR);
         }
@@ -342,7 +343,7 @@ public class TuleapSecurityRealm extends SecurityRealm {
         return this.pluginHelper.getJenkinsInstance();
     }
 
-    private void authenticateAsTuleapUser(StaplerRequest request, UserInfo userInfo, AccessToken accessToken) throws IOException {
+    private void authenticateAsTuleapUser(StaplerRequest2 request, UserInfo userInfo, AccessToken accessToken) throws IOException {
         final TuleapUserDetails tuleapUserDetails = new TuleapUserDetails(userInfo.getUsername());
         tuleapUserDetails.addAuthority(SecurityRealm.AUTHENTICATED_AUTHORITY2);
 
