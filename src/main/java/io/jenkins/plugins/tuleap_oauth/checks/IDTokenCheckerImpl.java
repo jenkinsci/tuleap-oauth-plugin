@@ -13,7 +13,7 @@ import io.jenkins.plugins.tuleap_api.client.authentication.OpenIDClientApi;
 import io.jenkins.plugins.tuleap_oauth.TuleapSecurityRealm;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import org.apache.commons.lang.StringUtils;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class IDTokenCheckerImpl implements IDTokenChecker {
         List<Jwk> jwks,
         String tuleapUri,
         String audience,
-        StaplerRequest request
+        StaplerRequest2 request
     ) throws InvalidPublicKeyException {
         String expectedIssuer = this.openIDClientApi.getProviderIssuer();
 

@@ -1,7 +1,7 @@
 package io.jenkins.plugins.tuleap_oauth.checks;
 
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 public interface AuthorizationCodeChecker {
-    boolean checkAuthorizationCode(StaplerRequest request);
+    boolean checkAuthorizationCode(StaplerRequest2 request);
 }
