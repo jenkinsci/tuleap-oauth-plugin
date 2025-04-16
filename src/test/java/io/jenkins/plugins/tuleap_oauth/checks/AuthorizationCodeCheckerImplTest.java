@@ -2,26 +2,27 @@ package io.jenkins.plugins.tuleap_oauth.checks;
 
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import jenkins.model.Jenkins;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.http.HttpSession;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
-public class AuthorizationCodeCheckerImplTest {
+class AuthorizationCodeCheckerImplTest {
 
     private PluginHelper helper;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         this.helper = mock(PluginHelper.class);
     }
 
     @Test
-    public void testItReturnsFalseWhereTheRedirectUriIsNotSaved() {
+    void testItReturnsFalseWhereTheRedirectUriIsNotSaved() {
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
@@ -32,7 +33,7 @@ public class AuthorizationCodeCheckerImplTest {
     }
 
     @Test
-    public void testItReturnsFalseWhereTheRedirectUriAndTheExpectedUriDoesNotMatch() {
+    void testItReturnsFalseWhereTheRedirectUriAndTheExpectedUriDoesNotMatch() {
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
@@ -47,7 +48,7 @@ public class AuthorizationCodeCheckerImplTest {
     }
 
     @Test
-    public void testItReturnFalseWhenThereIsNoCodeReturned() {
+    void testItReturnFalseWhenThereIsNoCodeReturned() {
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
@@ -65,7 +66,7 @@ public class AuthorizationCodeCheckerImplTest {
     }
 
     @Test
-    public void testItReturnFalseWhenThereIsNoStateReturned(){
+    void testItReturnFalseWhenThereIsNoStateReturned() {
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
@@ -83,8 +84,9 @@ public class AuthorizationCodeCheckerImplTest {
         AuthorizationCodeCheckerImpl authorizationCodeChecker = new AuthorizationCodeCheckerImpl(this.helper);
         assertFalse(authorizationCodeChecker.checkAuthorizationCode(request));
     }
+
     @Test
-    public void testItReturnFalseWhenThereIsNoStateStoredInSession(){
+    void testItReturnFalseWhenThereIsNoStateStoredInSession() {
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
@@ -104,7 +106,7 @@ public class AuthorizationCodeCheckerImplTest {
     }
 
     @Test
-    public void testItReturnFalseWhenTheStoredSessionStateAndTheReturnedStateAreDifferent() {
+    void testItReturnFalseWhenTheStoredSessionStateAndTheReturnedStateAreDifferent() {
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
@@ -124,7 +126,7 @@ public class AuthorizationCodeCheckerImplTest {
     }
 
     @Test
-    public void testItReturnFalseWhenThereIsNoCodeVerifierStoredInSession() {
+    void testItReturnFalseWhenThereIsNoCodeVerifierStoredInSession() {
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
@@ -145,7 +147,7 @@ public class AuthorizationCodeCheckerImplTest {
     }
 
     @Test
-    public void testItReturnTrueAuthorizationChecksAreOk() {
+    void testItReturnTrueAuthorizationChecksAreOk() {
         StaplerRequest request = mock(StaplerRequest.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);

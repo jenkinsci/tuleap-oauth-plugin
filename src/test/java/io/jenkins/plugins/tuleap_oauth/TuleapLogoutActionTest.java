@@ -3,15 +3,15 @@ package io.jenkins.plugins.tuleap_oauth;
 import hudson.security.SecurityRealm;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import jenkins.model.Jenkins;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class TuleapLogoutActionTest {
+class TuleapLogoutActionTest {
 
     @Test
-    public void testItReturnsTheTuleapUriWhenTheTuleapAuthenticationIsEnabled() {
+    void testItReturnsTheTuleapUriWhenTheTuleapAuthenticationIsEnabled() {
         PluginHelper helper = mock(PluginHelper.class);
         Jenkins jenkins = mock(Jenkins.class);
 
@@ -26,7 +26,7 @@ public class TuleapLogoutActionTest {
     }
 
     @Test
-    public void testItReturnEmptyStringWhenTheTuleapAuthenticationIsEnabled() {
+    void testItReturnEmptyStringWhenTheTuleapAuthenticationIsEnabled() {
         PluginHelper helper = mock(PluginHelper.class);
         Jenkins jenkins = mock(Jenkins.class);
 
