@@ -4,9 +4,9 @@ import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import jenkins.model.Jenkins;
 import org.junit.Before;
 import org.junit.Test;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -22,7 +22,7 @@ public class AuthorizationCodeCheckerImplTest {
 
     @Test
     public void testItReturnsFalseWhereTheRedirectUriIsNotSaved() {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("redirect_uri")).thenReturn(null);
@@ -33,7 +33,7 @@ public class AuthorizationCodeCheckerImplTest {
 
     @Test
     public void testItReturnsFalseWhereTheRedirectUriAndTheExpectedUriDoesNotMatch() {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("redirect_uri")).thenReturn("https://redirect.example.com/");
@@ -48,7 +48,7 @@ public class AuthorizationCodeCheckerImplTest {
 
     @Test
     public void testItReturnFalseWhenThereIsNoCodeReturned() {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("redirect_uri")).thenReturn("https://redirect.example.com/securityRealm/finishLogin");
@@ -66,7 +66,7 @@ public class AuthorizationCodeCheckerImplTest {
 
     @Test
     public void testItReturnFalseWhenThereIsNoStateReturned(){
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("redirect_uri")).thenReturn("https://redirect.example.com/securityRealm/finishLogin");
@@ -85,7 +85,7 @@ public class AuthorizationCodeCheckerImplTest {
     }
     @Test
     public void testItReturnFalseWhenThereIsNoStateStoredInSession(){
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("redirect_uri")).thenReturn("https://redirect.example.com/securityRealm/finishLogin");
@@ -105,7 +105,7 @@ public class AuthorizationCodeCheckerImplTest {
 
     @Test
     public void testItReturnFalseWhenTheStoredSessionStateAndTheReturnedStateAreDifferent() {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("redirect_uri")).thenReturn("https://redirect.example.com/securityRealm/finishLogin");
@@ -125,7 +125,7 @@ public class AuthorizationCodeCheckerImplTest {
 
     @Test
     public void testItReturnFalseWhenThereIsNoCodeVerifierStoredInSession() {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("redirect_uri")).thenReturn("https://redirect.example.com/securityRealm/finishLogin");
@@ -146,7 +146,7 @@ public class AuthorizationCodeCheckerImplTest {
 
     @Test
     public void testItReturnTrueAuthorizationChecksAreOk() {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("redirect_uri")).thenReturn("https://redirect.example.com/securityRealm/finishLogin");
