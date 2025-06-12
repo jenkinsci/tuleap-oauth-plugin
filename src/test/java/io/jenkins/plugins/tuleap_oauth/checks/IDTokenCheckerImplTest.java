@@ -11,10 +11,10 @@ import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import io.jenkins.plugins.tuleap_oauth.stubs.ClaimStub;
 import org.junit.Before;
 import org.junit.Test;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.mockito.Mockito;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.security.interfaces.RSAPublicKey;
@@ -65,7 +65,7 @@ public class IDTokenCheckerImplTest {
         when(this.pluginHelper.getAlgorithm(key1)).thenReturn(algorithmKey1);
         when(this.pluginHelper.getAlgorithm(key2)).thenReturn(algorithmKey2);
 
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
@@ -95,7 +95,7 @@ public class IDTokenCheckerImplTest {
 
         when(this.pluginHelper.getAlgorithm(key1)).thenReturn(algorithmKey1);
 
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
@@ -131,7 +131,7 @@ public class IDTokenCheckerImplTest {
 
         when(this.pluginHelper.getAlgorithm(key1)).thenReturn(algorithmKey1);
 
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
@@ -171,7 +171,7 @@ public class IDTokenCheckerImplTest {
         when(this.pluginHelper.getAlgorithm(key2)).thenReturn(algorithmKey2);
         when(this.pluginHelper.getAlgorithm(key1)).thenReturn(algorithmKey1);
 
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
@@ -206,7 +206,7 @@ public class IDTokenCheckerImplTest {
         when(this.pluginHelper.getAlgorithm(key1)).thenReturn(algorithmKey1);
         when(this.pluginHelper.getAlgorithm(key2)).thenReturn(algorithmKey2);
 
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
@@ -247,7 +247,7 @@ public class IDTokenCheckerImplTest {
         when(this.pluginHelper.getAlgorithm(key1)).thenReturn(algorithmKey1);
         when(this.pluginHelper.getAlgorithm(key2)).thenReturn(algorithmKey2);
 
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
@@ -282,7 +282,7 @@ public class IDTokenCheckerImplTest {
         when(this.pluginHelper.getAlgorithm(key1)).thenReturn(algorithmKey1);
         when(this.pluginHelper.getAlgorithm(key2)).thenReturn(algorithmKey2);
 
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
@@ -319,7 +319,7 @@ public class IDTokenCheckerImplTest {
         when(this.pluginHelper.getAlgorithm(key1)).thenReturn(algorithmKey1);
         when(this.pluginHelper.getAlgorithm(key2)).thenReturn(algorithmKey2);
 
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);
@@ -367,7 +367,7 @@ public class IDTokenCheckerImplTest {
         when(this.pluginHelper.getAlgorithm(key1)).thenReturn(algorithmKey1);
         when(this.pluginHelper.getAlgorithm(key2)).thenReturn(algorithmKey2);
 
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute("nonce")).thenReturn(NONCE);
         when(request.getSession()).thenReturn(session);

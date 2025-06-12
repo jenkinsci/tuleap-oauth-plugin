@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import io.jenkins.plugins.tuleap_oauth.TuleapSecurityRealm;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
 import org.apache.commons.lang.StringUtils;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.security.MessageDigest;
 import java.util.logging.Level;
@@ -22,7 +22,7 @@ public class AuthorizationCodeCheckerImpl implements AuthorizationCodeChecker {
         this.pluginHelper = pluginHelper;
     }
 
-    public boolean checkAuthorizationCode(StaplerRequest request) {
+    public boolean checkAuthorizationCode(StaplerRequest2 request) {
 
         String expectedRedirectURI = (String) request.getSession().getAttribute(TuleapSecurityRealm.JENKINS_REDIRECT_URI_ATTRIBUTE);
 

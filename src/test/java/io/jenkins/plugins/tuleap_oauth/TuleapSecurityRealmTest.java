@@ -15,7 +15,7 @@ import io.jenkins.plugins.tuleap_server_configuration.TuleapConfiguration;
 import jenkins.model.Jenkins;
 import org.junit.Before;
 import org.junit.Test;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -97,7 +97,7 @@ public class TuleapSecurityRealmTest {
 
     @Test
     public void testItShouldRedirectToClassicLogoutUrlWhenAnonymousUsersCanRead() {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         when(request.getContextPath()).thenReturn("https://jenkins.example.com");
 
         Authentication authentication = mock(Authentication.class);
@@ -112,7 +112,7 @@ public class TuleapSecurityRealmTest {
 
     @Test
     public void testItShouldRedirectToTuleapLogoutUrlWhenAnonymousUsersCannotRead() {
-        StaplerRequest request = mock(StaplerRequest.class);
+        StaplerRequest2 request = mock(StaplerRequest2.class);
         when(request.getContextPath()).thenReturn("https://jenkins.example.com");
 
         Authentication authentication = mock(Authentication.class);
