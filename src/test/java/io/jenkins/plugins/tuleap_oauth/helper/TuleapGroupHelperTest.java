@@ -3,24 +3,20 @@ package io.jenkins.plugins.tuleap_oauth.helper;
 import io.jenkins.plugins.tuleap_api.client.Project;
 import io.jenkins.plugins.tuleap_api.client.ProjectApi;
 import io.jenkins.plugins.tuleap_api.client.UserGroup;
-import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
-import io.jenkins.plugins.tuleap_api.client.authentication.AccessTokenApi;
 import io.jenkins.plugins.tuleap_api.client.exceptions.ProjectNotFoundException;
 import io.jenkins.plugins.tuleap_oauth.TuleapAuthenticationToken;
 import io.jenkins.plugins.tuleap_oauth.TuleapOAuthClientConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class TuleapGroupHelperTest {
+class TuleapGroupHelperTest {
 
     @Test
-    public void itBuildsExpectedGroupNames() {
+    void itBuildsExpectedGroupNames() {
         final TuleapGroupHelper tuleapGroupHelper = new TuleapGroupHelper(mock(ProjectApi.class));
         final UserGroup userGroup = mock(UserGroup.class);
 
@@ -31,7 +27,7 @@ public class TuleapGroupHelperTest {
     }
 
     @Test
-    public void itReturnsTrueIfGroupNameIsOfTuleapFormat() {
+    void itReturnsTrueIfGroupNameIsOfTuleapFormat() {
         final TuleapGroupHelper tuleapGroupHelper = new TuleapGroupHelper(mock(ProjectApi.class));
 
         assertTrue(tuleapGroupHelper.groupNameIsInTuleapFormat("use-me#Contributors"));
@@ -40,7 +36,7 @@ public class TuleapGroupHelperTest {
     }
 
     @Test
-    public void itReturnsFalseIfProjectDoesNotExistOnTuleapServer() throws ProjectNotFoundException {
+    void itReturnsFalseIfProjectDoesNotExistOnTuleapServer() throws ProjectNotFoundException {
         final ProjectApi projectApi = mock(ProjectApi.class);
         final TuleapOAuthClientConfiguration tuleapOAuthClientConfiguration = mock(TuleapOAuthClientConfiguration.class);
         final TuleapAuthenticationToken tuleapAuthenticationToken = mock(TuleapAuthenticationToken.class);
@@ -52,7 +48,7 @@ public class TuleapGroupHelperTest {
     }
 
     @Test
-    public void itReturnsFalsIfGroupIsNotPresentOnServer() throws ProjectNotFoundException {
+    void itReturnsFalsIfGroupIsNotPresentOnServer() throws ProjectNotFoundException {
         final ProjectApi projectApi = mock(ProjectApi.class);
         final Project project = mock(Project.class);
         final UserGroup userGroup1 = mock(UserGroup.class);
@@ -74,7 +70,7 @@ public class TuleapGroupHelperTest {
     }
 
     @Test
-    public void itReturnsTrueIfGroupIsPresentOnServer() throws ProjectNotFoundException {
+    void itReturnsTrueIfGroupIsPresentOnServer() throws ProjectNotFoundException {
         final ProjectApi projectApi = mock(ProjectApi.class);
         final Project project = mock(Project.class);
         final UserGroup userGroup1 = mock(UserGroup.class);

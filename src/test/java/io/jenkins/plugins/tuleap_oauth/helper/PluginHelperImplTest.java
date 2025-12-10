@@ -2,18 +2,19 @@ package io.jenkins.plugins.tuleap_oauth.helper;
 
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.junit.jupiter.api.Test;
+
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class PluginHelperImplTest {
+class PluginHelperImplTest {
 
     @Test
-    public void testItShouldReturnARandomStringInBase64() {
+    void testItShouldReturnARandomStringInBase64() {
         final PluginHelperImpl codeBuilder = new PluginHelperImpl();
         final String result1 = codeBuilder.buildRandomBase64EncodedURLSafeString();
         final String result2 = codeBuilder.buildRandomBase64EncodedURLSafeString();
@@ -24,14 +25,14 @@ public class PluginHelperImplTest {
     }
 
     @Test
-    public void itShouldGenerateA43BytesLongSequence() {
+    void itShouldGenerateA43BytesLongSequence() {
         final PluginHelperImpl codeBuilder = new PluginHelperImpl();
 
         assertEquals(43, codeBuilder.buildRandomBase64EncodedURLSafeString().getBytes().length);
     }
 
     @Test
-    public void testItShouldReturnsFalseIfTheUriIsNotHttps() {
+    void testItShouldReturnsFalseIfTheUriIsNotHttps() {
         final PluginHelperImpl pluginHelper = new PluginHelperImpl();
 
         assertFalse(pluginHelper.isHttpsUrl("http://tuleap.example.com"));
@@ -41,14 +42,14 @@ public class PluginHelperImplTest {
     }
 
     @Test
-    public void testItShouldReturnsTrueIfTheUriIsHttps() {
+    void testItShouldReturnsTrueIfTheUriIsHttps() {
         final PluginHelperImpl pluginHelper = new PluginHelperImpl();
 
         assertTrue(pluginHelper.isHttpsUrl("https://tuleap.example.com"));
     }
 
     @Test
-    public void testItShouldReturnsNullIfTheResponseHasNoBody() throws IOException {
+    void testItShouldReturnsNullIfTheResponseHasNoBody() throws IOException {
         final PluginHelperImpl pluginHelper = new PluginHelperImpl();
         Response response = mock(Response.class);
         when(response.isSuccessful()).thenReturn(false);
@@ -61,7 +62,7 @@ public class PluginHelperImplTest {
     }
 
     @Test
-    public void testItShouldReturnsNullIfTheResponseIsNotSuccessful() throws IOException {
+    void testItShouldReturnsNullIfTheResponseIsNotSuccessful() throws IOException {
         final PluginHelperImpl pluginHelper = new PluginHelperImpl();
         Response response = mock(Response.class);
         when(response.isSuccessful()).thenReturn(false);
