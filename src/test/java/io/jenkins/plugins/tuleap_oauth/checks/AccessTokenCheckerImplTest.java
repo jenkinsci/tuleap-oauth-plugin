@@ -1,16 +1,16 @@
 package io.jenkins.plugins.tuleap_oauth.checks;
 
 import io.jenkins.plugins.tuleap_api.client.authentication.AccessToken;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
-public class AccessTokenCheckerImplTest {
-
+class AccessTokenCheckerImplTest {
 
     @Test
-    public void testResponseBodyReturnsFalseWhenBadTokenType() {
+    void testResponseBodyReturnsFalseWhenBadTokenType() {
         AccessToken representation = mock(AccessToken.class);
         when(representation.getTokenType()).thenReturn("mac");
 
@@ -18,18 +18,17 @@ public class AccessTokenCheckerImplTest {
         assertFalse(accessTokenChecker.checkResponseBody(representation));
     }
 
-
     @Test
-    public void testResponseBodyReturnsTrueWhenAllChecksAreOkWithCapitalizedBearerTokenType() {
+    void testResponseBodyReturnsTrueWhenAllChecksAreOkWithCapitalizedBearerTokenType() {
         responseBodyReturnsTrueWhenAllChecksAreOk("Bearer");
     }
 
     @Test
-    public void testResponseBodyReturnsTrueWhenAllChecksAreOkWithAllLowercaseBearerTokenType() {
+    void testResponseBodyReturnsTrueWhenAllChecksAreOkWithAllLowercaseBearerTokenType() {
         responseBodyReturnsTrueWhenAllChecksAreOk("bearer");
     }
 
-    public void responseBodyReturnsTrueWhenAllChecksAreOk(String tokenType) {
+    private void responseBodyReturnsTrueWhenAllChecksAreOk(String tokenType) {
         AccessToken representation = mock(AccessToken.class);
         when(representation.getTokenType()).thenReturn(tokenType);
         when(representation.getExpiresIn()).thenReturn("1202424");

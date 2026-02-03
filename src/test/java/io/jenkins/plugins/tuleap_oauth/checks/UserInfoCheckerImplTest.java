@@ -2,15 +2,16 @@ package io.jenkins.plugins.tuleap_oauth.checks;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.jenkins.plugins.tuleap_api.client.authentication.UserInfo;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
-public class UserInfoCheckerImplTest {
+class UserInfoCheckerImplTest {
 
     @Test
-    public void testItReturnFalseWhenTheSubjectValueIsNotExpected() {
+    void testItReturnFalseWhenTheSubjectValueIsNotExpected() {
         UserInfo userInfo = mock(UserInfo.class);
         when(userInfo.getSubject()).thenReturn("123");
 
@@ -22,7 +23,7 @@ public class UserInfoCheckerImplTest {
     }
 
     @Test
-    public void testItReturnFalseWhenTheUserIsInvalid() {
+    void testItReturnFalseWhenTheUserIsInvalid() {
         UserInfo userInfo = mock(UserInfo.class);
         when(userInfo.getSubject()).thenReturn("1510");
         when(userInfo.isEmailVerified()).thenReturn(false);
@@ -35,7 +36,7 @@ public class UserInfoCheckerImplTest {
     }
 
     @Test
-    public void testItReturnTrueIfTheBodyIsOk() {
+    void testItReturnTrueIfTheBodyIsOk() {
         UserInfo userInfo = mock(UserInfo.class);
         when(userInfo.getSubject()).thenReturn("123");
         when(userInfo.isEmailVerified()).thenReturn(true);
