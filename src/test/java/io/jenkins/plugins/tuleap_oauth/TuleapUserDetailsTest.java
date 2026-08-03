@@ -1,17 +1,18 @@
 package io.jenkins.plugins.tuleap_oauth;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TuleapUserDetailsTest {
+class TuleapUserDetailsTest {
 
     @Test
-    public void testItShouldConcatenateAllAuthorities() {
+    void testItShouldConcatenateAllAuthorities() {
         TuleapUserDetails tuleapUserDetails = new TuleapUserDetails("a User");
 
         GrantedAuthority authority1 = new SimpleGrantedAuthority("authenticated");
@@ -22,7 +23,7 @@ public class TuleapUserDetailsTest {
 
         Collection<? extends GrantedAuthority> authorities = tuleapUserDetails.getAuthorities();
 
-        assertEquals(authorities.size(), 2);
+        assertEquals(2, authorities.size());
         assertTrue(authorities.contains(authority1));
         assertTrue(authorities.contains(authority2));
     }

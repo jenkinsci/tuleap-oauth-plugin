@@ -3,8 +3,8 @@ package io.jenkins.plugins.tuleap_oauth.helper;
 import io.jenkins.plugins.tuleap_oauth.TuleapSecurityRealm;
 import io.jenkins.plugins.tuleap_oauth.pkce.PKCECodeBuilder;
 import jenkins.model.Jenkins;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.http.HttpSession;
@@ -13,18 +13,18 @@ import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class TuleapAuthorizationCodeUrlBuilderImplTest {
+class TuleapAuthorizationCodeUrlBuilderImplTest {
 
     private PluginHelper pluginHelper;
     private PKCECodeBuilder codeBuilder;
 
     private Jenkins jenkins;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         this.pluginHelper = mock(PluginHelper.class);
         this.codeBuilder = mock(PKCECodeBuilder.class);
 
@@ -33,7 +33,7 @@ public class TuleapAuthorizationCodeUrlBuilderImplTest {
     }
 
     @Test
-    public void testItReturnsTheAuthenticationErrorActionUrlWhenUrlIsNotHttps() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    void testItReturnsTheAuthenticationErrorActionUrlWhenUrlIsNotHttps() throws UnsupportedEncodingException, NoSuchAlgorithmException {
         StaplerRequest request = mock(StaplerRequest.class);
 
         when(this.pluginHelper.isHttpsUrl("http://fail.example.com")).thenReturn(false);
@@ -53,7 +53,7 @@ public class TuleapAuthorizationCodeUrlBuilderImplTest {
     }
 
     @Test
-    public void testItShouldReturnTheAuthorizationCodeUriWithTheRightParameters() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    void testItShouldReturnTheAuthorizationCodeUriWithTheRightParameters() throws NoSuchAlgorithmException, UnsupportedEncodingException {
         StaplerRequest request = mock(StaplerRequest.class);
 
         String tuleapUri = "https://tuleap.example.com/";
@@ -77,8 +77,8 @@ public class TuleapAuthorizationCodeUrlBuilderImplTest {
         String expectedUri = "https://tuleap.example.com/oauth2/authorize?" +
             "response_type=code" +
             "&client_id=123" +
-            "&redirect_uri=" + URLEncoder.encode("https://jenkins.example.com/securityRealm/finishLogin", UTF_8.name()) +
-            "&scope="+ URLEncoder.encode("read:project read:user_membership openid profile email", UTF_8.name()) +
+            "&redirect_uri=" + URLEncoder.encode("https://jenkins.example.com/securityRealm/finishLogin", UTF_8) +
+            "&scope="+ URLEncoder.encode("read:project read:user_membership openid profile email", UTF_8) +
             "&state=Brabus" +
             "&code_challenge=B35S" +
             "&code_challenge_method=S256" +
