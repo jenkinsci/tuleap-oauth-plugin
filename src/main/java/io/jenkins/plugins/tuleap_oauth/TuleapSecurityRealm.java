@@ -34,7 +34,7 @@ import io.jenkins.plugins.tuleap_server_configuration.TuleapConfiguration;
 import jenkins.model.Jenkins;
 import jenkins.security.SecurityListener;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.*;
 import org.kohsuke.stapler.verb.POST;
 import org.springframework.security.authentication.AuthenticationManager;

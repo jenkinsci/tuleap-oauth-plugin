@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 import io.jenkins.plugins.tuleap_api.client.authentication.OpenIDClientApi;
 import io.jenkins.plugins.tuleap_oauth.TuleapSecurityRealm;
 import io.jenkins.plugins.tuleap_oauth.helper.PluginHelper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.List;
