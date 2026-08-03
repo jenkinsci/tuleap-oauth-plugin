@@ -7,7 +7,7 @@ import io.jenkins.plugins.tuleap_api.client.UserGroup;
 import io.jenkins.plugins.tuleap_api.client.exceptions.ProjectNotFoundException;
 import io.jenkins.plugins.tuleap_oauth.TuleapAuthenticationToken;
 import io.jenkins.plugins.tuleap_oauth.TuleapOAuthClientConfiguration;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
